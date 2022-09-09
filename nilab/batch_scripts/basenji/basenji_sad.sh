@@ -41,7 +41,7 @@ export PYTHONPATH=$BASE_DIR/bin:$PYTHONPATH
 
 ## Command(s) to run:
 CHROM=chrXY
-cd BASE_DIR || exit
+cd $BASE_DIR
 nilab/basenji/compute_sad.py \
   /clusterfs/nilah/richard/kidney_data/models/params_sc_kidney_regression.json \
   /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_${CHROM}/model_best.h5 \
