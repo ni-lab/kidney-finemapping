@@ -137,6 +137,9 @@ def initialize_output_h5(out_dir, snps, target_ids, target_labels, targets_lengt
     sad_out.create_dataset('ref_allele', data=snp_refs)
     sad_out.create_dataset('alt_allele', data=snp_alts)
 
+    # write if the snp ref and alt are flipped with respect to the input VCF
+    sad_out.create_dataset("snp_flipped", data=snp_flips)
+
     # write targets
     sad_out.create_dataset('target_ids', data=np.array(target_ids, 'S'))
     sad_out.create_dataset('target_labels', data=np.array(target_labels, 'S'))
