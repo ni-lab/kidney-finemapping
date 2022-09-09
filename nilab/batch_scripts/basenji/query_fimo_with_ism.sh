@@ -31,15 +31,24 @@ scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 ## Load modules and set environment variables:
 module load python
 module load cuda/10.0
-source activate basenji
 module load meme
-export BASENJIDIR=/clusterfs/nilah/richard/home/basenji
-export PATH=$BASENJIDIR/bin:$PATH
-export PYTHONPATH=$BASENJIDIR/bin:$PYTHONPATH
+conda activate kidney_finemapping
+
+export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
+export PATH=$BASE_DIR/bin:$PATH
+export PYTHONPATH=$BASE_DIR/bin:$PYTHONPATH
 
 ## Command(s) to run:
-cd /clusterfs/nilah/richard/home/basenji
-
 MIN_THRESH=1e-3
 RATIO_THRESH=0.5
-query_fimo_with_ism.py --min_thresh ${MIN_THRESH} --ratio_thresh ${RATIO_THRESH} --stats max -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt -o /clusterfs/nilah/richard/kidney_data/220513_variants/fimo/fimo_scored_by_ism_combined_dbs_${MIN_THRESH}_${RATIO_THRESH} /clusterfs/nilah/richard/motif_databases/databases_for_ism/meme_combined/meme_combined.meme /clusterfs/nilah/richard/kidney_data/220513_variants/ism_summed_pos_shifts/all_chrs /clusterfs/nilah/richard/kidney_data/220513_variants/sad/all_chrs/sad.h5
+
+cd $BASE_DIR
+query_fimo_with_ism.py \
+  /clusterfs/nilah/richard/motif_databases/databases_for_ism/meme_combined/meme_combined.meme \
+  /clusterfs/nilah/richard/kidney_data/220513_variants/ism_summed_pos_shifts/all_chrs \
+  /clusterfs/nilah/richard/kidney_data/220513_variants/sad/all_chrs/sad.h5 \
+  --min_thresh ${MIN_THRESH} \
+  --ratio_thresh ${RATIO_THRESH} \
+  --stats max \
+  -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt \
+  -o /clusterfs/nilah/richard/kidney_data/220513_variants/fimo/fimo_scored_by_ism_combined_dbs_${MIN_THRESH}_${RATIO_THRESH}

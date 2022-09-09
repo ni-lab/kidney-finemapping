@@ -34,13 +34,21 @@ scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 ## Load modules and set environment variables:
 module load python
 module load cuda/10.0
-source activate basenji
+conda activate kidney_finemapping
 
-export BASENJIDIR=/clusterfs/nilah/richard/home/basenji
-export PATH=$BASENJIDIR/bin:$PATH
-export PYTHONPATH=$BASENJIDIR/bin:$PYTHONPATH
+export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
+export PATH=$BASE_DIR/bin:$PATH
+export PYTHONPATH=$BASE_DIR/bin:$PYTHONPATH
 
 ## Command(s) to run:
 CHROM=chr2
-cd /clusterfs/nilah/richard/home/basenji
-basenji_ism_summed_pos_shifts.py -f /clusterfs/nilah/richard/genomes/hg38.ml.fa -o /clusterfs/nilah/richard/kidney_data/220513_variants/ism_summed_pos_shifts/${CHROM} --rc --shifts "1,0,-1" -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt /clusterfs/nilah/richard/kidney_data/models/params_sc_kidney_regression.json /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_${CHROM}/model_best.h5 /clusterfs/nilah/richard/kidney_data/220513_variants/data/processed/snps_by_chrom/${CHROM}_snps.vcf
+cd $BASE_DIR
+nilab/basenji/ism_summed_pos_shifts.py \
+  /clusterfs/nilah/richard/kidney_data/models/params_sc_kidney_regression.json \
+  /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_${CHROM}/model_best.h5 \
+  /clusterfs/nilah/richard/kidney_data/220513_variants/data/processed/snps_by_chrom/${CHROM}_snps.vcf \
+  -f /clusterfs/nilah/richard/genomes/hg38.ml.fa \
+  --rc \
+  --shifts "1,0,-1" \
+  -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt \
+  -o /clusterfs/nilah/richard/refactor/kidney_data/220513_variants/ism_summed_pos_shifts/${CHROM}
