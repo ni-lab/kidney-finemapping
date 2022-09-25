@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Load modules and set environment variables:
-module load python
+module load python/3.8.8
 module load cuda/10.0
 source activate kidney_finemapping
 

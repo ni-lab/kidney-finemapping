@@ -29,7 +29,7 @@
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 
 ## Load modules and set environment variables:
-module load python
+module load python/3.8.8
 module load java
 module load cuda/10.0
 source activate basenji
