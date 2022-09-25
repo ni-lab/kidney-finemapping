@@ -29,9 +29,9 @@
 
 ## Write batch script to logs
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
-sleep 5s
 
 ## Load modules and set environment variables:
+source ~/.bashrc
 module load python
 module load cuda/10.0
 conda activate kidney_finemapping
