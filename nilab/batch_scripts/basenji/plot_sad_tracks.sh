@@ -1,4 +1,4 @@
-source activate kidney_finemapping
+conda activate kidney_finemapping
 
 cd /home/rshuai/research/ni-lab/kidney_finemapping/nilab || exit
 

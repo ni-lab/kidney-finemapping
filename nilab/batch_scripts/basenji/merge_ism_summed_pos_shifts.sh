@@ -3,7 +3,7 @@
 ## Load modules and set environment variables:
 module load python/3.8.8
 module load cuda/10.0
-source activate kidney_finemapping
+conda activate kidney_finemapping
 
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 export PATH=$BASE_DIR/bin:$PATH
