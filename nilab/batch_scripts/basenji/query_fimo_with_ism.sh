@@ -23,7 +23,7 @@
 # Send stdout and stderr to logs
 #SBATCH --output=log_files/job_%j.out
 #SBATCH --error=log_files/job_%j.err
-#
+
 
 ## Write batch script to logs
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
