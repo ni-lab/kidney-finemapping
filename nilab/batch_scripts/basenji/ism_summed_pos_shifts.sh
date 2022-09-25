@@ -34,7 +34,7 @@ scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 ## Load modules and set environment variables:
 module load python
 module load cuda/10.0
-conda activate kidney_finemapping
+source activate kidney_finemapping
 
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 export PATH=$BASE_DIR/bin:$PATH
