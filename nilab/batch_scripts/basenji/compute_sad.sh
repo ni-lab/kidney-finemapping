@@ -31,6 +31,7 @@
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 
 ## Load modules and set environment variables:
+conda init bash
 source ~/.bashrc
 module load python
 module load cuda/10.0
