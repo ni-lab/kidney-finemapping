@@ -16,8 +16,8 @@ from nilab.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_CMAP
 def main():
     usage = 'usage: %prog [options] <sad_file>'
     parser = OptionParser(usage)
-    parser.add_option('--stats', dest='sad_stats', default='SAD,REF,ALT', help='Comma-separated list of stats to plot')
     parser.add_option('-t', dest='targets_file', default=None, type='str', help='Targets file')
+    parser.add_option('--overlay', dest='overlay', default=False, action="store_true", help='Overlay ref and alt for plotting')
     parser.add_option('-o', dest='out_dir', default='sad_pos_shifts_plots', help='Output directory for script')
     options, args = parser.parse_args()
 
@@ -28,7 +28,6 @@ def main():
 
     sad_file = args[0]
     os.makedirs(options.out_dir, exist_ok=True)
-    options.sad_stats = options.sad_stats.split(',')
 
     # Read in files
     sad_h5 = h5py.File(sad_file, mode='r')
@@ -47,15 +46,19 @@ def main():
     metrics_df_sorted.to_csv(f"{options.out_dir}/metrics.csv", sep='\t', index=False, header=True)
 
     # Plot SAD tracks and save to out directory
-    plot_snp_sad_comparison(sad_h5, targets, options.out_dir, options.sad_stats)
+    if options.overlay:
+        plot_snp_sad_comparison_overlay(sad_h5, targets, options.out_dir)
+    else:
+        plot_snp_sad_comparison(sad_h5, targets, options.out_dir, sad_stats=["SAD", "REF", "ALT"])
 
 
 @typechecked
 def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: str, sad_stats: List[str]) -> None:
     """
-    Plots a comparison of SAD tracks between classification and regression models for a single SNP for each target.
+    Plots SAD, REF, and ALT tracks for all snps.
+    - If overlay_ref_alt is True, we overlay the REF and ALT tracks, using a darker shade for the less accessible allele
+    and a lighter shade for the more accessible allele.
     """
-
     num_snps = sad_h5['snp'].shape[0]
     num_preds = sad_h5['REF'].shape[0]
     num_pos_per_snp = num_preds // num_snps
@@ -72,7 +75,10 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
             print(f"Skipping indel for plotting: {rsid}")
             continue
 
-        fig, axs = plt.subplots(num_targets, len(sad_stats), figsize=(50, 100))
+        # figure dimensions
+        width, height = 50, 100
+        fig, axs = plt.subplots(num_targets, len(sad_stats), figsize=(width, height))
+
         xs = np.linspace(-mid, num_pos_per_snp - mid, num_pos_per_snp, endpoint=False)
         xtick_labels = np.linspace(-mid, num_pos_per_snp - mid, num=7, endpoint=True)
 
@@ -106,6 +112,93 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
         fig.tight_layout(pad=4.0)
         plt.savefig(os.path.join(out_dir, '{}.pdf'.format(rsid)), dpi=400)
         plt.close('all')
+
+
+@typechecked
+def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: str) -> None:
+    """
+    Plots SAD, REF, and ALT tracks for all snps, overlaying the REF and ALT tracks.
+    We use a darker shade for the less accessible allele and a lighter shade for the more accessible allele.
+    """
+    num_snps = sad_h5['snp'].shape[0]
+    num_preds = sad_h5['REF'].shape[0]
+    num_pos_per_snp = num_preds // num_snps
+    mid = num_pos_per_snp // 2  # seq_len - seq_len // 2 = seq_len // 2 for even seq_len
+
+    num_targets = targets.shape[0]
+
+    for i in range(num_snps):
+        ref_allele = sad_h5["ref_allele"][i].decode("utf-8")
+        alt_allele = sad_h5["alt_allele"][i].decode("utf-8")
+        rsid = sad_h5['snp'][i].decode('utf-8')
+
+        if len(ref_allele) > 1 or len(alt_allele) > 1:
+            # skip indels for plotting
+            print(f"Skipping indel for plotting: {rsid}")
+            continue
+
+        # figure dimensions
+        width, height = 33, 100
+        fig, axs = plt.subplots(num_targets, 2, figsize=(width, height))
+
+        xs = np.linspace(-mid, num_pos_per_snp - mid, num_pos_per_snp, endpoint=False)
+        xtick_labels = np.linspace(-mid, num_pos_per_snp - mid, num=7, endpoint=True)
+
+        # Calculate ylim across all plots
+        y_max = np.max(np.abs(
+            [sad_h5[sad_stat][num_pos_per_snp * i:num_pos_per_snp * (i + 1)].squeeze() for sad_stat in ["SAD", "REF", "ALT"]]))
+
+        for plot_i, ti in enumerate(PLOT_KIDNEY_TARGET_INDICES):
+            # For overlaying REF and ALT, put more accessible allele first as measured by mean
+            allele_order = sorted(["REF", "ALT"], key=lambda x: np.mean(
+                sad_h5[x][num_pos_per_snp * i:num_pos_per_snp * (i + 1)].squeeze()
+            ), reverse=True)
+
+            sad_stats = ["SAD"] + allele_order  # order to plot SAD stats in so that we plot the more accessible allele first
+
+            for si, sad_stat in enumerate(sad_stats):
+                # Flip track to convert SAD pos shifts from prediction-centered to variant-centered tracks
+                tracks = np.flip(sad_h5[sad_stat][num_pos_per_snp * i:num_pos_per_snp * (i + 1)].squeeze(), axis=0)
+
+                track_ti = tracks[:, ti]
+
+                if sad_stat == "SAD":
+                    ax = axs[plot_i, 0]
+                    ax.set_ylabel('SAD Score', fontsize=50, labelpad=20)
+                else:
+                    # REF or ALT
+                    ax = axs[plot_i, 1]
+                    ax.set_ylabel(f"{sad_stats[1]} (more accessible) \n {sad_stats[2]} (less accessible)",
+                                  fontsize=40, labelpad=20)
+
+                ax.set_xticks(xtick_labels)
+                ax.tick_params(axis="x", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
+
+
+                # Make ylim scale to 1.1*max y_value across all targets.
+                if sad_stat == 'SAD':
+                    ax.set_ylim(-y_max * 1.1 / 2, y_max * 1.1 / 2)
+                else:
+                    ax.set_ylim(y_max * -0.05, y_max * 1.05)
+                ax.tick_params(axis="y", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
+                ax.set_title('{}, {}'.format(rsid, targets['identifier'].iloc[ti]),
+                             fontsize=50, pad=15)
+
+                if si == 1:
+                    # plot more accessible allele
+                    r, g, b, a = KIDNEY_CMAP(ti)
+                    lighter_color = (r, g, b, 0.4)
+                    # ax.plot(xs, track_ti, color=lighter_color)
+                    ax.fill_between(xs, track_ti, color=lighter_color)
+                else:
+                    # plot SAD score and less accessible allele
+                    # ax.plot(xs, track_ti, color=KIDNEY_CMAP(ti))
+                    ax.fill_between(xs, track_ti, color=KIDNEY_CMAP(ti))
+
+        fig.tight_layout(pad=4.0)
+        plt.savefig(os.path.join(out_dir, '{}.pdf'.format(rsid)), dpi=400)
+        plt.close('all')
+
 
 
 @typechecked
