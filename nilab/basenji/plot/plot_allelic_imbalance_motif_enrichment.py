@@ -29,16 +29,18 @@ def main():
     # Read in files
     tf_analysis_df = pd.read_csv(tf_analysis_csv, index_col=0)
     hypergeom_per_motif_df = pd.read_csv(hypergeom_per_motif_tsv, sep="\t", index_col=0)
-
     hypergeom_per_motif_df = hypergeom_per_motif_df.sort_values(by="hypergeom_qval", ascending=True)  # sort by qval
 
     # Extract top N tf motifs
-    if options.cell_type == "combined":
-        tubule_targets = ['CFH', 'PT', 'LOH', 'DT', 'CD']
+    if options.cell_type == "Tubule":
+        top_tfs = set()
+        tubule_targets = ['CFH', 'PT', 'LOH', 'DT', 'IC']  # IC is CD
         for target in tubule_targets:
-            raise NotImplementedError("Implement this later")
-
-    top_tfs = set(tf_analysis_df.sort_values(by=options.cell_type, ascending=False)["gene_name"][:options.n].str.lower().values)
+            top_tfs = top_tfs.union(
+                set(tf_analysis_df.sort_values(by=target, ascending=False)["gene_name"][:options.n].str.lower().values)
+            )
+    else:
+        top_tfs = set(tf_analysis_df.sort_values(by=options.cell_type, ascending=False)["gene_name"][:options.n].str.lower().values)
 
     # subset to motifs for top N expressed TFs, taking most significant motif for duplicates (e.g. dealing with var.2)
     motifs = hypergeom_per_motif_df["motif_alt_id"].str.lower().str.replace(r'\([^)]*\)', '', regex=True)  # get rid of (var.2) annotation
@@ -48,11 +50,15 @@ def main():
 
     # sanity check: check how many motifs match expressed TFs (not just the top ones)
     motifs_found = set(motifs.values).intersection(tf_analysis_df["gene_name"].str.lower().values)
-    print(f"Found {filtered_hypergeom_df.shape[0]} motifs in the top {options.n} motifs")
+    print(f"Found {filtered_hypergeom_df.shape[0]} motifs in the top {options.n} TFs in {options.cell_type}")
     print(f"{len(motifs_found)} out of {hypergeom_per_motif_df.shape[0]} motifs were found in TF analysis csv")
 
     # filter for significant matches by hypergeom for plotting
     filtered_hypergeom_df = filtered_hypergeom_df[filtered_hypergeom_df["hypergeom_qval"] <= 0.05]
+
+    # Plotting
+    # capitalize all names
+    filtered_hypergeom_df["motif_alt_id"] = filtered_hypergeom_df["motif_alt_id"].str.upper()
 
     # bar plots
     filtered_hypergeom_df["-log10(hypergeom_qval)"] = -np.log10(filtered_hypergeom_df["hypergeom_qval"])
@@ -60,17 +66,22 @@ def main():
     # plot all enrichment qvalue
     plt.figure(figsize=(8, 4.8))
     sns.barplot(x="motif_alt_id", y="-log10(hypergeom_qval)", data=filtered_hypergeom_df, color="dimgray")
-    # plt.xticks([])
-    plt.xticks(rotation=45)
+    if filtered_hypergeom_df.shape[0] > 50:
+        plt.xticks(rotation=60, fontsize=6, ha="right")
+    else:
+        plt.xticks(rotation=60, fontsize=10, ha="right")
     plt.tight_layout()
-    plt.savefig(f"{options.out_dir}/{options.cell_type}_hypergeom_top_{options.n}.png", dpi=300, bbox_inches="tight")
+    plt.savefig(f"{options.out_dir}/{options.cell_type}_hypergeom_top_{options.n}.pdf", dpi=300, bbox_inches="tight")
     plt.show()
 
     # plot percent positive increased
     plt.figure(figsize=(8, 4.8))
     barplot = sns.barplot(x="motif_alt_id", y="pct_pos_incr", data=filtered_hypergeom_df, color="dimgray")
     plt.axhline(y=0.5, c="orange", ls="--", dashes=(4, 5))
-    plt.xticks(rotation=45)
+    if filtered_hypergeom_df.shape[0] > 50:
+        plt.xticks(rotation=60, fontsize=6, ha="right")
+    else:
+        plt.xticks(rotation=60, fontsize=10, ha="right")
 
     # add significance asterisks
     filtered_hypergeom_df["binom_sig"] = filtered_hypergeom_df["binom_qval"] <= 0.05
@@ -79,7 +90,7 @@ def main():
             barplot.text(p.get_x() + p.get_width() / 2., p.get_height(), "*", ha="center")
 
     plt.tight_layout()
-    plt.savefig(f"{options.out_dir}/{options.cell_type}_binom_top_{options.n}.png", dpi=300, bbox_inches="tight")
+    plt.savefig(f"{options.out_dir}/{options.cell_type}_binom_top_{options.n}.pdf", dpi=300, bbox_inches="tight")
     plt.show()
 
 
