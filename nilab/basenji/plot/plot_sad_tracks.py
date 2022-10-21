@@ -2,13 +2,14 @@
 
 import os
 from optparse import OptionParser
-from typing import List
+from typing import List, Tuple
 
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from typeguard import typechecked
+from scipy.interpolate import make_interp_spline
 
 from nilab.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_CMAP
 
@@ -18,6 +19,8 @@ def main():
     parser = OptionParser(usage)
     parser.add_option('-t', dest='targets_file', default=None, type='str', help='Targets file')
     parser.add_option('--overlay', dest='overlay', default=False, action="store_true", help='Overlay ref and alt for plotting')
+    parser.add_option('--overlay_lines_only', dest='overlay_lines_only', default=False, action="store_true",
+                      help='If using overlay, plot lines only (do not fill between).')
     parser.add_option('-o', dest='out_dir', default='sad_pos_shifts_plots', help='Output directory for script')
     options, args = parser.parse_args()
 
@@ -47,7 +50,7 @@ def main():
 
     # Plot SAD tracks and save to out directory
     if options.overlay:
-        plot_snp_sad_comparison_overlay(sad_h5, targets, options.out_dir)
+        plot_snp_sad_comparison_overlay(sad_h5, targets, options.out_dir, lines_only=options.overlay_lines_only)
     else:
         plot_snp_sad_comparison(sad_h5, targets, options.out_dir, sad_stats=["SAD", "REF", "ALT"])
 
@@ -115,7 +118,8 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
 
 
 @typechecked
-def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: str) -> None:
+def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: str,
+                                    lines_only=False) -> None:
     """
     Plots SAD, REF, and ALT tracks for all snps, overlaying the REF and ALT tracks.
     We use a darker shade for the less accessible allele and a lighter shade for the more accessible allele.
@@ -168,32 +172,56 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
                 else:
                     # REF or ALT
                     ax = axs[plot_i, 1]
-                    ax.set_ylabel(f"{sad_stats[1]} (more accessible) \n {sad_stats[2]} (less accessible)",
+                    ax.set_ylabel(f"REF (darker)\nALT (lighter)",
                                   fontsize=40, labelpad=20)
 
                 ax.set_xticks(xtick_labels)
                 ax.tick_params(axis="x", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
 
-
                 # Make ylim scale to 1.1*max y_value across all targets.
+                # Important: must be consistent between SAD tracks and REF / ALT for scaling reasons
+                ylim_scale = 1.1
                 if sad_stat == 'SAD':
-                    ax.set_ylim(-y_max * 1.1 / 2, y_max * 1.1 / 2)
+                    ax.set_ylim(-y_max * ylim_scale / 2, y_max * ylim_scale / 2)
                 else:
-                    ax.set_ylim(y_max * -0.05, y_max * 1.05)
+                    s = (ylim_scale - 1) / 2
+                    ax.set_ylim(y_max * -s, y_max * (1 + s))
                 ax.tick_params(axis="y", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
                 ax.set_title('{}, {}'.format(rsid, targets['identifier'].iloc[ti]),
                              fontsize=50, pad=15)
 
-                if si == 1:
-                    # plot more accessible allele
-                    r, g, b, a = KIDNEY_CMAP(ti)
-                    lighter_color = (r, g, b, 0.4)
-                    # ax.plot(xs, track_ti, color=lighter_color)
-                    ax.fill_between(xs, track_ti, color=lighter_color)
+                r, g, b, a = KIDNEY_CMAP(ti)
+                if sad_stat == "ALT":
+                    # plot alternate allele with lighter color
+                    # tinting: https://stackoverflow.com/questions/6615002/given-an-rgb-value-how-do-i-create-a-tint-or-shade
+                    if lines_only:
+                        # tint much lighter if only plotting the lines
+                        tint_factor = 0.7
+                    else:
+                        tint_factor = 0.5
+                    rt = r + (tint_factor * (1 - r))
+                    gt = g + (tint_factor * (1 - g))
+                    bt = b + (tint_factor * (1 - b))
+                    color = (rt, gt, bt, a)
                 else:
-                    # plot SAD score and less accessible allele
-                    # ax.plot(xs, track_ti, color=KIDNEY_CMAP(ti))
-                    ax.fill_between(xs, track_ti, color=KIDNEY_CMAP(ti))
+                    color = (r, g, b, a)
+
+                xnew, track_smooth = smooth_track(xs, track_ti, k=3)
+
+                if lines_only:
+                    ax.plot(xnew, track_smooth, color=color, lw=5)
+                else:
+                    if si == 1:
+                        # plot only the top of the more accessible allele
+                        less_accessible_sad_stat = sad_stats[2]
+                        track_less_accessible = np.flip(sad_h5[less_accessible_sad_stat]
+                                                        [num_pos_per_snp * i:num_pos_per_snp * (i + 1)].squeeze(), axis=0)[:, ti]
+
+                        _, track_less_accessible_smooth = smooth_track(xs, track_less_accessible, k=3)
+                        ax.fill_between(xnew, track_smooth, track_less_accessible_smooth, color=color)
+                    else:
+                        # plot SAD and less accessible allele
+                        ax.fill_between(xnew, track_smooth, color=color)
 
         fig.tight_layout(pad=4.0)
         plt.savefig(os.path.join(out_dir, '{}.pdf'.format(rsid)), dpi=400)
@@ -260,6 +288,24 @@ def calc_snp_metrics(i: int, sad_h5: h5py.File, targets: pd.DataFrame, metrics: 
     snp_metrics = pd.DataFrame([[sad_h5['snp'][i].decode('utf-8')] + snp_metrics], columns=['rsid', *metric_names])
 
     return snp_metrics
+
+
+def smooth_track(xs: np.array, track: np.array, k: int = 3, num_points: int = 50) -> Tuple[np.array, np.array]:
+    """
+    Smooth the provided track.
+    Args:
+        - xs: x-values
+        - track: y-values
+        - k: B-spline degree
+        - num_points: number of points to smooth with
+
+    Output:
+        - tuple of (smoothed x values, smoothed y values)
+    """
+    spl = make_interp_spline(xs, track, k=k)
+    xnew = np.linspace(xs.min(), xs.max(), num_points)
+    track_smooth = spl(xnew)
+    return xnew, track_smooth
 
 
 if __name__ == '__main__':
