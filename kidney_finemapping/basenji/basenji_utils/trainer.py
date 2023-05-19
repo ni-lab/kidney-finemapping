@@ -23,8 +23,8 @@ from tensorflow.python.ops import math_ops
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import dtypes
 
-from nilab.basenji.basenji_utils import layers
-from nilab.basenji.basenji_utils import metrics
+from kidney_finemapping.basenji.basenji_utils import layers
+from kidney_finemapping.basenji.basenji_utils import metrics
 
 
 def parse_loss(loss_label, strategy=None, keras_fit=True, spec_weight=1):

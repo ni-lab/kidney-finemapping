@@ -27,6 +27,5 @@ dependencies:
   - tabulate
   - pip
   - pybedtools
-  - tensorflow-gpu
   - typeguard
 prefix: /home/rshuai/miniconda3/envs/kidney_finemapping

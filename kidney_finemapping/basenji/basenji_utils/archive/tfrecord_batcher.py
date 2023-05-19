@@ -17,9 +17,9 @@ import sys
 
 import tensorflow as tf
 
-from nilab.basenji.basenji_utils import dna_io
-from nilab.basenji.basenji_utils import ops
-from nilab.basenji.basenji_utils import tfrecord_util
+from kidney_finemapping.basenji.basenji_utils import dna_io
+from kidney_finemapping.basenji.basenji_utils import ops
+from kidney_finemapping.basenji.basenji_utils import tfrecord_util
 
 # Multiplier for how many items to have in the shuffle buffer, invariant of how
 # many files we're parallel-interleaving for our input datasets.

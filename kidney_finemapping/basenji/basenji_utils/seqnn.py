@@ -22,9 +22,9 @@ from natsort import natsorted
 import numpy as np
 import tensorflow as tf
 
-from nilab.basenji.basenji_utils import blocks
-from nilab.basenji.basenji_utils import layers
-from nilab.basenji.basenji_utils import metrics
+from kidney_finemapping.basenji.basenji_utils import blocks
+from kidney_finemapping.basenji.basenji_utils import layers
+from kidney_finemapping.basenji.basenji_utils import metrics
 
 
 class SeqNN():

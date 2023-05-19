@@ -11,7 +11,7 @@ import pandas as pd
 from typeguard import typechecked
 from scipy.interpolate import make_interp_spline
 
-from nilab.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_CMAP
+from kidney_finemapping.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_CMAP
 
 
 def main():
@@ -232,7 +232,7 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
 @typechecked
 def calc_snp_metrics(i: int, sad_h5: h5py.File, targets: pd.DataFrame, metrics: List[str]):
     """
-    Calculates metrics on SAD tracks for each SNP. 
+    Calculates metrics on SAD tracks for each SNP.
 
     Args:
      - i: index of SNP in H5 file.

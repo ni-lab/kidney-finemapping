@@ -9,8 +9,8 @@ import pandas as pd
 import seaborn as sns
 from tqdm import tqdm
 
-from nilab.basenji.basenji_utils import plots
-from nilab.basenji.basenji_utils.dna_io import dna_1hot
+from kidney_finemapping.basenji.basenji_utils import plots
+from kidney_finemapping.basenji.basenji_utils.dna_io import dna_1hot
 
 
 def main():

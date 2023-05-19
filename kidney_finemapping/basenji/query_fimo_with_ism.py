@@ -7,7 +7,7 @@ import h5py
 import numpy as np
 import pandas as pd
 from collections import defaultdict
-from nilab.basenji.basenji_utils.dna_io import dna_1hot
+from kidney_finemapping.basenji.basenji_utils.dna_io import dna_1hot
 from tqdm import tqdm
 
 

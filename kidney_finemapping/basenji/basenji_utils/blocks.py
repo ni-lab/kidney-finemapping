@@ -15,7 +15,7 @@
 import numpy as np
 import tensorflow as tf
 
-from nilab.basenji.basenji_utils import layers
+from kidney_finemapping.basenji.basenji_utils import layers
 
 
 ############################################################

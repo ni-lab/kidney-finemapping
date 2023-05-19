@@ -18,7 +18,7 @@ from collections import OrderedDict
 import h5py
 import numpy as np
 
-from nilab.basenji.basenji_utils.gene import TSS, GeneSeq
+from kidney_finemapping.basenji.basenji_utils.gene import TSS, GeneSeq
 
 
 class GeneData:

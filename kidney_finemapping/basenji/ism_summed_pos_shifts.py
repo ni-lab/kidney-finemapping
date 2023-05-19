@@ -9,9 +9,9 @@ import pandas as pd
 import pysam
 from tqdm import tqdm
 
-from nilab.basenji.basenji_utils import seqnn
-from nilab.basenji.basenji_utils import stream
-from nilab.basenji.basenji_utils import vcf as bvcf
+from kidney_finemapping.basenji.basenji_utils import seqnn
+from kidney_finemapping.basenji.basenji_utils import stream
+from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 
 
 def main():

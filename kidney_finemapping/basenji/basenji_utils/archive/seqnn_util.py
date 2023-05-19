@@ -11,8 +11,8 @@ import sys
 import numpy as np
 import tensorflow as tf
 
-from nilab.basenji.basenji_utils.dna_io import hot1_augment
-from nilab.basenji.basenji_utils import accuracy
+from kidney_finemapping.basenji.basenji_utils.dna_io import hot1_augment
+from kidney_finemapping.basenji.basenji_utils import accuracy
 
 
 class SeqNNModel(object):

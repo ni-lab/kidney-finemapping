@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 import pysam
 
-import nilab.basenji.basenji_utils.dna_io
+import kidney_finemapping.basenji.basenji_utils.dna_io
 
 """vcf.py
 
@@ -685,7 +685,7 @@ def dna_length_1hot(seq, length):
 
     # n_uniform required to avoid different
     #   random nucleotides for each allele
-    seq_1hot = nilab.basenji.basenji_utils.dna_io.dna_1hot(seq, n_uniform=True)
+    seq_1hot = kidney_finemapping.basenji.basenji_utils.dna_io.dna_1hot(seq, n_uniform=True)
 
     return seq_1hot, seq
 

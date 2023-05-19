@@ -17,7 +17,7 @@ import sys
 
 import pysam
 
-from nilab.basenji.basenji_utils import dna_io
+from kidney_finemapping.basenji.basenji_utils import dna_io
 
 
 ################################################################################

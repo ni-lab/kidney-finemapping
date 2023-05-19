@@ -9,7 +9,7 @@ import h5py
 import numpy as np
 from scipy.stats import cauchy
 
-from nilab.basenji.basenji_utils.emerald import EmeraldVCF
+from kidney_finemapping.basenji.basenji_utils.emerald import EmeraldVCF
 
 '''
 sad5.py

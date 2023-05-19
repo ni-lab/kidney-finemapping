@@ -14,7 +14,7 @@
 import pdb
 import tensorflow as tf
 
-from nilab.basenji.basenji_utils import ops
+from kidney_finemapping.basenji.basenji_utils import ops
 
 
 def stochastic_rc(seq_1hot):

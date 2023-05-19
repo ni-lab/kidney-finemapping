@@ -18,7 +18,7 @@ import pdb
 import numpy as np
 import tensorflow as tf
 
-from nilab.basenji.basenji_utils import dna_io
+from kidney_finemapping.basenji.basenji_utils import dna_io
 
 
 class PredStreamGen:
