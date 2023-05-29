@@ -1,4 +1,4 @@
-name: kidney_finemapping
+name: basenji_kidney_finemapping
 channels:
   - conda-forge
   - bioconda
@@ -28,4 +28,3 @@ dependencies:
   - pip
   - pybedtools
   - typeguard
-prefix: /home/rshuai/miniconda3/envs/kidney_finemapping
