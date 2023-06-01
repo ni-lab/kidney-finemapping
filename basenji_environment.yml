@@ -1,30 +1,34 @@
 name: basenji_kidney_finemapping
 channels:
+  - defaults
   - conda-forge
   - bioconda
-  - defaults
+  - nvidia
 dependencies:
-  - matplotlib
-  - numpy
-  - seaborn
+  - astropy
+  - cudatoolkit=11
+  - cudnn==8
+  - cython
   - h5py
+  - intervaltree
+  - joblib
+  - matplotlib
+  - natsort
+  - networkx
+  - numpy
+  - packaging
+  - pandas
+  - pillow
+  - pybedtools
+  - pybigwig
+  - pysam
+  - python=3.8
   - scikit-learn
   - scipy
-  - tqdm
-  - pandas
-  - cython
-  - packaging
-  - python=3.8
-  - astropy
+  - seaborn
   - statsmodels
-  - networkx
-  - pillow
-  - pybigwig
-  - joblib
-  - natsort
-  - intervaltree
-  - pysam
   - tabulate
-  - pip
-  - pybedtools
-  - typeguard
+  - pip:
+    - cooler
+    - cooltools
+    - tensorflow
