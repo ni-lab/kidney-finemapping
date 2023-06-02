@@ -11,6 +11,8 @@ import statsmodels.api as sm
 def main():
     """
     Given allelic imbalance data merged across individuals, create positive and negative sets for analysis.
+    - args[0] <allelic_imbalance_file> - Allelic imbalance file
+    - args[1] <peaks_file> - File containing peaks for each cell type (if tubule_peaks is True, this is a directory containing peaks for each cell type)
     """
     usage = "usage: %prog [options] <allelic_imbalance_file> <peaks_file>"
     parser = OptionParser(usage)
