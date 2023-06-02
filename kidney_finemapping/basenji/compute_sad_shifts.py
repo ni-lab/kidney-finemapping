@@ -111,7 +111,7 @@ def main():
     # predictions index
     pi = 0
 
-    for si in tqdm(range(num_snps * num_pos, desc=f"SNP {si // num_pos + 1}/{num_snps}")):
+    for si in tqdm(range(num_snps * num_pos)):
         # get predictions
         ref_preds = preds_stream[pi]
         pi += 1
