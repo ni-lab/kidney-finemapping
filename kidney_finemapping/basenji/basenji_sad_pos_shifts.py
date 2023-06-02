@@ -3,18 +3,14 @@ from __future__ import print_function
 
 import json
 import os
-import pickle
 from optparse import OptionParser
-from queue import Queue
-from threading import Thread
 
 import h5py
 import numpy as np
 import pandas as pd
 import pysam
 
-from kidney_finemapping.basenji.basenji_utils import seqnn
-from kidney_finemapping.basenji.basenji_utils import stream
+from kidney_finemapping.basenji.basenji_utils import seqnn, stream
 from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 
 

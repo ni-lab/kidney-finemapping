@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 import pysam
 
-from kidney_finemapping.basenji.basenji_utils import seqnn
-from kidney_finemapping.basenji.basenji_utils import stream
+from kidney_finemapping.basenji.basenji_utils import seqnn, stream
 from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 
 

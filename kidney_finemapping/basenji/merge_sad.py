@@ -22,7 +22,7 @@ def main():
     parser.add_option("--vcf", dest="vcf",
                       default=False, action="store_true",
                       help="If set, combine SNP VCFs from SAD output to out directory as well.")
-    parser.add_option("-o", dest="out_dir", required=True, help="Output directory for merged SAD h5 file.")
+    parser.add_option("-o", dest="out_dir", default="all_chrs", help="Output directory for merged SAD h5 file.")
     (options, args) = parser.parse_args()
 
     # Setup
