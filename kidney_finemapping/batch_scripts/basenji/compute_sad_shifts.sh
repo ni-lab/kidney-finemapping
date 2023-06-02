@@ -3,7 +3,7 @@
 #SBATCH --job-name=basenji_sad_shifts
 #
 # Account:
-#SBATCH --account=co_nilah
+#SBATCH --account=ac_nilah
 #
 # Partition:
 #SBATCH --partition=savio2_gpu
