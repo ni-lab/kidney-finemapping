@@ -31,15 +31,14 @@
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 
 ## Load modules and set environment variables:
-conda init bash
-source ~/.bashrc
-module load python/3.8.8
-module load cuda/10.0
-conda activate kidney_finemapping
+export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
+module load cuda/11.2
+
+# source the conda.sh script:
+source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
+conda activate basenji_kidney_finemapping
 
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
-export PATH=$BASE_DIR/bin:$PATH
-export PYTHONPATH=$BASE_DIR/bin:$PYTHONPATH
 
 ## Command(s) to run:
 CHROM=chrXY
@@ -52,4 +51,4 @@ kidney_finemapping/basenji/compute_sad.py \
   --rc \
   --shifts "1,0,-1" \
   -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt \
-  -o /clusterfs/nilah/richard/refactor/220620_variants/susie/sad
+  -o /clusterfs/nilah/richard/refactor/220620_variants/susie/sad/${CHROM}
