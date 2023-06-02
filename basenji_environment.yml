@@ -6,8 +6,6 @@ channels:
   - nvidia
 dependencies:
   - astropy
-  - cudatoolkit=11
-  - cudnn==8
   - cython
   - h5py
   - intervaltree
@@ -28,7 +26,7 @@ dependencies:
   - seaborn
   - statsmodels
   - tabulate
+  - tqdm
   - pip:
     - cooler
     - cooltools
-    - tensorflow
