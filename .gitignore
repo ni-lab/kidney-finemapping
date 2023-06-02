@@ -3,3 +3,4 @@ out_dir
 log_files
 .vscode
 *.egg-info
+out_dir

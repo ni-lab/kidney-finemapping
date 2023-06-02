@@ -53,4 +53,4 @@ kidney_finemapping/basenji/ism_summed_pos_shifts.py \
   --rc \
   --shifts "1,0,-1" \
   -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt \
-  -o /clusterfs/nilah/richard/refactor/kidney_data/220513_variants/ism_summed_pos_shifts/${CHROM}
+  -o out_dir/kidney_data/220513_variants/ism_summed_pos_shifts/${CHROM}

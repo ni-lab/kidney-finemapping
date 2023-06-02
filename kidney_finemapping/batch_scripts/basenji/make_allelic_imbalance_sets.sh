@@ -3,10 +3,10 @@
 #SBATCH --job-name=make_allelic_imbalance_sets
 #
 # Account:
-#SBATCH --account=fc_nilah
+#SBATCH --account=ac_nilah
 #
 # Partition:
-#SBATCH --partition=savio
+#SBATCH --partition=savio3
 #
 # Number of nodes:
 #SBATCH --nodes=1
@@ -15,7 +15,7 @@
 #SBATCH --ntasks=1
 #
 # Processors per task (please always specify the total number of processors twice the number of GPUs):
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=2
 #
 # Wall clock limit:
 #SBATCH --time=1:00:00
@@ -48,12 +48,12 @@ for TARGET in LOH PT DT
 do
     echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        /clusterfs/nilah/richard/refactor/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
-        /clusterfs/nilah/richard/refactor/sc_atac_seq/${TARGET}_peaks.narrowPeak \
+        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
+        out_dir/sc_atac_seq/${TARGET}_peaks.narrowPeak \
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
         --thresh ${THRESH} \
-        -o /clusterfs/nilah/richard/refactor/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
+        -o out_dir/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
 done
 
 # Make allelic imbalance sets for combined, Tubule
@@ -62,11 +62,11 @@ for TARGET in combined Tubule
 do
     echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        /clusterfs/nilah/richard/refactor/allelic_imbalance/data/raw/astestq10tab/all_${target}q10.tsv \
-        /clusterfs/nilah/richard/refactor/sc_atac_seq \
+        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${target}q10.tsv \
+        out_dir/sc_atac_seq \
         --tubule_peaks \
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
         --thresh ${THRESH} \
-         -o /clusterfs/nilah/richard/refactor/allelic_imbalance/data/preprocessed/${target}_variants_neg${NEG_MULT}x_q${THRESH}
+         -o out_dir/allelic_imbalance/data/preprocessed/${target}_variants_neg${NEG_MULT}x_q${THRESH}
 done

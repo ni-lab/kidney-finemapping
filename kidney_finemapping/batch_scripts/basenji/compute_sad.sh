@@ -48,9 +48,9 @@ CHROM=chrXY
 kidney_finemapping/basenji/compute_sad.py \
   /clusterfs/nilah/richard/kidney_data/models/params_sc_kidney_regression.json \
   /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_${CHROM}/model_best.h5 \
-  /clusterfs/nilah/richard/refactor/220620_variants/susie/data/preprocessed/snps_by_chrom/${CHROM}_snps.vcf \
+  out_dir/220620_variants/susie/data/preprocessed/snps_by_chrom/${CHROM}_snps.vcf \
   -f /clusterfs/nilah/richard/genomes/hg38.ml.fa \
   --rc \
   --shifts "1,0,-1" \
   -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt \
-  -o /clusterfs/nilah/richard/refactor/220620_variants/susie/sad/${CHROM}
+  -o out_dir/220620_variants/susie/sad/${CHROM}
