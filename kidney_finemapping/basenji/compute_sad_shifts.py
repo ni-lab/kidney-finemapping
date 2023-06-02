@@ -10,6 +10,7 @@ import h5py
 import numpy as np
 import pandas as pd
 import pysam
+from tqdm import tqdm
 
 from kidney_finemapping.basenji.basenji_utils import seqnn, stream
 from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
@@ -108,7 +109,7 @@ def main():
     # predictions index
     pi = 0
 
-    for si in range(num_snps * num_pos):
+    for si in tqdm(range(num_snps * num_pos)):
         # get predictions
         ref_preds = preds_stream[pi]
         pi += 1
