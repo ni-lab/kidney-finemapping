@@ -62,7 +62,7 @@ for TARGET in combined Tubule
 do
     echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${target}q10.tsv \
+        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
         out_dir/sc_atac_seq \
         --tubule_peaks \
         --neg_mult ${NEG_MULT} \
