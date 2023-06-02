@@ -41,4 +41,4 @@ export PYTHONPATH=$BASENJIDIR/bin:$PYTHONPATH
 
 ## Command(s) to run:
 cd /clusterfs/nilah/richard/home/basenji
-basenji_plot_ism.py /clusterfs/nilah/richard/kidney_data/220513_variants/ism_summed_pos_shifts/all_chrs /clusterfs/nilah/richard/kidney_data/220513_variants/sad/all_chrs/sad.h5 -l 20 -g -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt -o /clusterfs/nilah/richard/kidney_data/220513_variants/ism_plots 
+basenji_plot_ism.py /clusterfs/nilah/richard/kidney_data/220513_variants/ism_summed_pos_shifts/all_chrs /clusterfs/nilah/richard/kidney_data/220513_variants/sad/all_chrs/sad.h5 -l 20 -g -t resources/targets/kidney_sc_wigs_hg38.txt -o /clusterfs/nilah/richard/kidney_data/220513_variants/ism_plots

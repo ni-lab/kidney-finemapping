@@ -56,7 +56,6 @@ def main():
             peak_df = pd.read_table(os.path.join(peaks_file, "{}_peaks.narrowPeak".format(cell_type)), sep="\t",
                                     header=None)
             peaks.append(peak_df)
-            peaks = pd.concat(peaks, axis=0)
         peaks = pd.concat(peaks, axis=0)
     else:
         peaks = pd.read_table(peaks_file, sep="\t", header=None)

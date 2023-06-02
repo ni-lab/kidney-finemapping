@@ -52,5 +52,5 @@ query_fimo_with_ism.py \
   --min_thresh ${MIN_THRESH} \
   --ratio_thresh ${RATIO_THRESH} \
   --stats max \
-  -t /clusterfs/nilah/richard/kidney_data/targets/kidney_sc_wigs_hg38.txt \
+  -t resources/targets/kidney_sc_wigs_hg38.txt \
   -o /clusterfs/nilah/richard/kidney_data/220513_variants/fimo/fimo_scored_by_ism_combined_dbs_${MIN_THRESH}_${RATIO_THRESH}
