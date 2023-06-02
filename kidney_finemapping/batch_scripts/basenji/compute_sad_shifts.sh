@@ -6,7 +6,7 @@
 #SBATCH --account=ac_nilah
 #
 # Partition:
-#SBATCH --partition=savio2_gpu
+#SBATCH --partition=savio3_gpu
 #
 # Number of nodes:
 #SBATCH --nodes=1
