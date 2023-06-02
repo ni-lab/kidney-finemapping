@@ -46,7 +46,7 @@ class PredStreamGen:
                 print('Predicting from %d' % self.stream_start, flush=True)
 
             # predict
-            self.stream_preds = self.model.predict(self.make_dataset())
+            self.stream_preds = self.model.predict(self.make_dataset(), verbose=0)
 
             # update end
             self.stream_end = self.stream_start + self.stream_preds.shape[0]
