@@ -29,16 +29,18 @@
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 
 ## Load modules and set environment variables:
-conda init bash
-source ~/.bashrc
-module load python/3.8.8
-module load java
-module load cuda/10.0
-source activate basenji
-export BASENJIDIR=/clusterfs/nilah/richard/home/basenji
-export PATH=$BASENJIDIR/bin:$PATH
-export PYTHONPATH=$BASENJIDIR/bin:$PYTHONPATH
+export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
+module load cuda/11.2
+
+# source the conda.sh script:
+source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
+conda activate basenji_kidney_finemapping
+
+# Set base directory
+export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
+cd $BASE_DIR
 
 ## Command(s) to run:
-cd /clusterfs/nilah/richard/home/basenji
-preprocess_finemapped_variants.py /clusterfs/nilah/richard/kidney_data/220513_variants/data/raw/220513_gwas_replicating_loci_top_variants_susie5_finemap5_01_hg38.txt -o /clusterfs/nilah/richard/kidney_data/220513_variants/data/processed
+kidney_finemapping/basenji/preprocess_finemapped_variants.py /clusterfs/nilah/richard/refactor/220620_variants/susie/data/raw/220620_tubule_centered_susie3_exonexclude_220617_FinemappedTubuleTest.txt \
+    -o /clusterfs/nilah/richard/refactor/220620_variants/susie/data/processed
+

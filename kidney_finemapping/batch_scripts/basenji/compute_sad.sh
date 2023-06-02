@@ -34,14 +34,16 @@ scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
 module load cuda/11.2
 
-# source the conda.sh script:
+# Source the conda.sh script:
 source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
 conda activate basenji_kidney_finemapping
+
+# Set base directory
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
+cd $BASE_DIR
 
 ## Command(s) to run:
 CHROM=chrXY
-cd $BASE_DIR
 kidney_finemapping/basenji/compute_sad.py \
   /clusterfs/nilah/richard/kidney_data/models/params_sc_kidney_regression.json \
   /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_${CHROM}/model_best.h5 \
