@@ -37,7 +37,6 @@ module load cuda/11.2
 # source the conda.sh script:
 source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
 conda activate basenji_kidney_finemapping
-
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 
 ## Command(s) to run:

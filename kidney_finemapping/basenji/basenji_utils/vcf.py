@@ -795,43 +795,6 @@ def vcf_snps(vcf_file, require_sorted=False, validate_ref_fasta=None,
     return snps
 
 
-def vcf_snps_ism(vcf_file, mut_up, mut_down):
-    """ Load SNPs from a VCF file for iterative saturation mutagenesis.
-    For each SNP, we obtain a length sat_mut, with the ref allele matching the genome
-    and the alt alleles consisting of all other 3.
-    TODO: Find a better way for this. Alt and ref alleles will be meaningless.
-
-    Inputs:
-     - vcf_file: vcf file denoting SNPs to perform ISM on
-     - mut_up: length of ISM upstream
-     - mut_down: length of ISM downstream
-    """
-    if vcf_file[-3:] == '.gz':
-        vcf_in = gzip.open(vcf_file, 'rt')
-    else:
-        vcf_in = open(vcf_file)
-
-    # read through header
-    line = vcf_in.readline()
-    while line[0] == '#':
-        line = vcf_in.readline()
-
-    # read in SNPs
-    snps = []
-    while line:
-        # Append "fake" SNPs for positions downstream and upstream. Alt and ref alleles will be meaningless.
-        chrom, pos, rsid, ref, alt = line.split()
-        for mi in range(-mut_up, mut_down):
-            new_snp_line = '\t'.join((chrom, str(int(pos) + mi), rsid, ref, alt))
-            snps.append(SNP(new_snp_line, False, original_pos=pos))  # The original pos2 is False, original_pos = pos
-
-        line = vcf_in.readline()
-
-    vcf_in.close()
-
-    return snps
-
-
 def vcf_sort(vcf_file):
     # move
     os.rename(vcf_file, '%s.tmp' % vcf_file)

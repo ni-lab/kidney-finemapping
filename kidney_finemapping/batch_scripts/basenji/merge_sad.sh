@@ -1,19 +1,16 @@
 #!/bin/bash
 ## Load modules and set environment variables:
+export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
+module load cuda/11.2
 
-## Command(s) to run:
-conda init bash
-source ~/.bashrc
-module load python/3.8.8
-module load cuda/10.0
-conda activate kidney_finemapping
-
+# source the conda.sh script:
+source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
+conda activate basenji_kidney_finemapping
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
-export PATH=$BASE_DIR/bin:$PATH
-export PYTHONPATH=$BASE_DIR/bin:$PYTHONPATH
 
 ## Command(s) to run:
 cd $BASE_DIR
-merge_sad.py /clusterfs/nilah/richard/kidney_data/220620_variants/susie/sad/ \
+kidney_finemapping/basenji/merge_sad.py /clusterfs/nilah/richard/refactor/220620_variants/susie/sad/ \
   -n 22 \
-  -o /clusterfs/nilah/richard/kidney_data/220620_variants/susie/sad/all_chrs
+  --vcf \
+  -o /clusterfs/nilah/richard/refactor/220620_variants/susie/sad/all_chrs
