@@ -13,6 +13,8 @@ from kidney_finemapping.basenji.basenji_utils import seqnn
 from kidney_finemapping.basenji.basenji_utils import stream
 from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # suppress TensorFlow warnings
+
 
 def main():
     usage = 'usage: %prog [options] <params_file> <model_file> <vcf_file>'

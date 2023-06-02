@@ -15,6 +15,8 @@ from tqdm import tqdm
 from kidney_finemapping.basenji.basenji_utils import seqnn, stream
 from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # suppress TensorFlow warnings
+
 
 def main():
     """
@@ -109,7 +111,7 @@ def main():
     # predictions index
     pi = 0
 
-    for si in tqdm(range(num_snps * num_pos)):
+    for si in tqdm(range(num_snps * num_pos, desc=f"SNP {si // num_pos + 1}/{num_snps}")):
         # get predictions
         ref_preds = preds_stream[pi]
         pi += 1
