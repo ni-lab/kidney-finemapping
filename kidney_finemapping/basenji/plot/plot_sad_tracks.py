@@ -15,13 +15,13 @@ from kidney_finemapping.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_C
 
 
 def main():
-    usage = 'usage: %prog [options] <sad_file>'
+    usage = "usage: %prog [options] <sad_file>"
     parser = OptionParser(usage)
-    parser.add_option('-t', dest='targets_file', default=None, type='str', help='Targets file')
-    parser.add_option('--overlay', dest='overlay', default=False, action="store_true", help='Overlay ref and alt for plotting')
-    parser.add_option('--overlay_lines_only', dest='overlay_lines_only', default=False, action="store_true",
-                      help='If using overlay, plot lines only (do not fill between).')
-    parser.add_option('-o', dest='out_dir', default='sad_pos_shifts_plots', help='Output directory for script')
+    parser.add_option("-t", dest="targets_file", default=None, type="str", help="Targets file")
+    parser.add_option("--overlay", dest="overlay", default=False, action="store_true", help="Overlay ref and alt for plotting")
+    parser.add_option("--overlay_lines_only", dest="overlay_lines_only", default=False, action="store_true",
+                      help="If using overlay, plot lines only (do not fill between).")
+    parser.add_option("-o", dest="out_dir", default="sad_pos_shifts_plots", help="Output directory for script")
     options, args = parser.parse_args()
 
     # Setup
@@ -33,20 +33,20 @@ def main():
     os.makedirs(options.out_dir, exist_ok=True)
 
     # Read in files
-    sad_h5 = h5py.File(sad_file, mode='r')
+    sad_h5 = h5py.File(sad_file, mode="r")
     targets = pd.read_table(options.targets_file, index_col=0)
 
     #################################################################
     # Calculate metrics and sort by max sad ratio
-    num_snps = sad_h5['snp'].shape[0]
-    metrics = ['max_sad_ratio', 'max_sad', 'max_sad_ratio_per_target', 'max_sad_per_target']
+    num_snps = sad_h5["snp"].shape[0]
+    metrics = ["max_sad_ratio", "max_sad", "max_sad_ratio_per_target", "max_sad_per_target"]
     metrics_df = []
     for i in range(num_snps):
         snp_metrics = calc_snp_metrics(i, sad_h5, targets, metrics)
         metrics_df.append(snp_metrics)
     metrics_df = pd.concat(metrics_df, axis=0)
     metrics_df_sorted = metrics_df.sort_values(by="max_sad_ratio", ascending=False)
-    metrics_df_sorted.to_csv(f"{options.out_dir}/metrics.csv", sep='\t', index=False, header=True)
+    metrics_df_sorted.to_csv(f"{options.out_dir}/metrics.csv", sep="\t", index=False, header=True)
 
     # Plot SAD tracks and save to out directory
     if options.overlay:
@@ -62,8 +62,8 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
     - If overlay_ref_alt is True, we overlay the REF and ALT tracks, using a darker shade for the less accessible allele
     and a lighter shade for the more accessible allele.
     """
-    num_snps = sad_h5['snp'].shape[0]
-    num_preds = sad_h5['REF'].shape[0]
+    num_snps = sad_h5["snp"].shape[0]
+    num_preds = sad_h5["REF"].shape[0]
     num_pos_per_snp = num_preds // num_snps
     mid = num_pos_per_snp // 2  # seq_len - seq_len // 2 = seq_len // 2 for even seq_len
 
@@ -72,7 +72,7 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
     for i in range(num_snps):
         ref_allele = sad_h5["ref_allele"][i].decode("utf-8")
         alt_allele = sad_h5["alt_allele"][i].decode("utf-8")
-        rsid = sad_h5['snp'][i].decode('utf-8')
+        rsid = sad_h5["snp"][i].decode("utf-8")
         if len(ref_allele) > 1 or len(alt_allele) > 1:
             # skip indels for plotting
             print(f"Skipping indel for plotting: {rsid}")
@@ -99,22 +99,22 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
 
                 ax.set_xticks(xtick_labels)
                 ax.tick_params(axis="x", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
-                ax.set_ylabel('{} Score'.format(sad_stat), fontsize=50, labelpad=20)
+                ax.set_ylabel("{} Score".format(sad_stat), fontsize=50, labelpad=20)
 
                 # Make ylim scale to 1.1*max y_value across all targets.
-                if sad_stat == 'SAD':
+                if sad_stat == "SAD":
                     ax.set_ylim(-y_max * 1.1 / 2, y_max * 1.1 / 2)
                 else:
                     ax.set_ylim(y_max * -0.05, y_max * 1.05)
                 ax.tick_params(axis="y", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
-                ax.set_title('{}, {}'.format(rsid, targets['identifier'].iloc[ti]),
+                ax.set_title("{}, {}".format(rsid, targets["identifier"].iloc[ti]),
                              fontsize=50, pad=15)
                 ax.plot(xs, track_ti, color=KIDNEY_CMAP(ti))
                 ax.fill_between(xs, track_ti, color=KIDNEY_CMAP(ti))
 
         fig.tight_layout(pad=4.0)
-        plt.savefig(os.path.join(out_dir, '{}.pdf'.format(rsid)), dpi=400)
-        plt.close('all')
+        plt.savefig(os.path.join(out_dir, "{}.pdf".format(rsid)), dpi=400)
+        plt.close("all")
 
 
 @typechecked
@@ -124,8 +124,8 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
     Plots SAD, REF, and ALT tracks for all snps, overlaying the REF and ALT tracks.
     We use a darker shade for the less accessible allele and a lighter shade for the more accessible allele.
     """
-    num_snps = sad_h5['snp'].shape[0]
-    num_preds = sad_h5['REF'].shape[0]
+    num_snps = sad_h5["snp"].shape[0]
+    num_preds = sad_h5["REF"].shape[0]
     num_pos_per_snp = num_preds // num_snps
     mid = num_pos_per_snp // 2  # seq_len - seq_len // 2 = seq_len // 2 for even seq_len
 
@@ -134,7 +134,7 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
     for i in range(num_snps):
         ref_allele = sad_h5["ref_allele"][i].decode("utf-8")
         alt_allele = sad_h5["alt_allele"][i].decode("utf-8")
-        rsid = sad_h5['snp'][i].decode('utf-8')
+        rsid = sad_h5["snp"][i].decode("utf-8")
 
         if len(ref_allele) > 1 or len(alt_allele) > 1:
             # skip indels for plotting
@@ -168,7 +168,7 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
 
                 if sad_stat == "SAD":
                     ax = axs[plot_i, 0]
-                    ax.set_ylabel('SAD Score', fontsize=50, labelpad=20)
+                    ax.set_ylabel("SAD Score", fontsize=50, labelpad=20)
                 else:
                     # REF or ALT
                     ax = axs[plot_i, 1]
@@ -181,13 +181,13 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
                 # Make ylim scale to 1.1*max y_value across all targets.
                 # Important: must be consistent between SAD tracks and REF / ALT for scaling reasons
                 ylim_scale = 1.1
-                if sad_stat == 'SAD':
+                if sad_stat == "SAD":
                     ax.set_ylim(-y_max * ylim_scale / 2, y_max * ylim_scale / 2)
                 else:
                     s = (ylim_scale - 1) / 2
                     ax.set_ylim(y_max * -s, y_max * (1 + s))
                 ax.tick_params(axis="y", direction="inout", length=18, width=3, color="black", pad=15, labelsize=30)
-                ax.set_title('{}, {}'.format(rsid, targets['identifier'].iloc[ti]),
+                ax.set_title("{}, {}".format(rsid, targets["identifier"].iloc[ti]),
                              fontsize=50, pad=15)
 
                 r, g, b, a = KIDNEY_CMAP(ti)
@@ -224,8 +224,8 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
                         ax.fill_between(xnew, track_smooth, color=color)
 
         fig.tight_layout(pad=4.0)
-        plt.savefig(os.path.join(out_dir, '{}.pdf'.format(rsid)), dpi=400)
-        plt.close('all')
+        plt.savefig(os.path.join(out_dir, "{}.pdf".format(rsid)), dpi=400)
+        plt.close("all")
 
 
 
@@ -248,44 +248,44 @@ def calc_snp_metrics(i: int, sad_h5: h5py.File, targets: pd.DataFrame, metrics: 
     """
     snp_metrics = []
 
-    num_snps = sad_h5['snp'].shape[0]
-    num_preds = sad_h5['REF'].shape[0]
+    num_snps = sad_h5["snp"].shape[0]
+    num_preds = sad_h5["REF"].shape[0]
     num_pos_per_snp = num_preds // num_snps
     start, end = num_pos_per_snp * i, num_pos_per_snp * (i + 1)
 
     metric_names = []
 
     for metric in metrics:
-        if metric == 'max_sad':
-            snp_metric = np.max(np.abs(sad_h5['SAD'][start:end]))
+        if metric == "max_sad":
+            snp_metric = np.max(np.abs(sad_h5["SAD"][start:end]))
             metric_names.append(metric)
             snp_metrics.append(snp_metric)
-        elif metric == 'max_sad_ratio':
-            snp_metric = np.max(np.max(np.abs(sad_h5['SAD'][start:end]), axis=0) / np.max((sad_h5['REF'][start:end]
-                                                                                           + sad_h5['ALT'][
+        elif metric == "max_sad_ratio":
+            snp_metric = np.max(np.max(np.abs(sad_h5["SAD"][start:end]), axis=0) / np.max((sad_h5["REF"][start:end]
+                                                                                           + sad_h5["ALT"][
                                                                                              start:end]) / 2,
                                                                                           axis=(0, 1)))
             metric_names.append(metric)
             snp_metrics.append(snp_metric)
 
-        elif metric == 'max_sad_per_target':
-            snp_metric = np.max(np.abs(sad_h5['SAD'][start:end]), axis=0)
+        elif metric == "max_sad_per_target":
+            snp_metric = np.max(np.abs(sad_h5["SAD"][start:end]), axis=0)
 
             for ti in PLOT_KIDNEY_TARGET_INDICES:
-                metric_names.append('max_sad_{}'.format(targets['identifier'].iloc[ti]))
+                metric_names.append("max_sad_{}".format(targets["identifier"].iloc[ti]))
                 snp_metrics.append(snp_metric[ti])
 
-        elif metric == 'max_sad_ratio_per_target':
-            snp_metric = np.max(np.abs(sad_h5['SAD'][start:end]), axis=0) / np.max((sad_h5['REF'][start:end] +
-                                                                                    sad_h5['ALT'][start:end]) / 2,
+        elif metric == "max_sad_ratio_per_target":
+            snp_metric = np.max(np.abs(sad_h5["SAD"][start:end]), axis=0) / np.max((sad_h5["REF"][start:end] +
+                                                                                    sad_h5["ALT"][start:end]) / 2,
                                                                                    axis=(0, 1))
             for ti in PLOT_KIDNEY_TARGET_INDICES:
-                metric_names.append('max_sad_ratio_{}'.format(targets['identifier'].iloc[ti]))
+                metric_names.append("max_sad_ratio_{}".format(targets["identifier"].iloc[ti]))
                 snp_metrics.append(snp_metric[ti])
         else:
-            assert False, 'Unrecognized metric {}'.format(metric)
+            assert False, "Unrecognized metric {}".format(metric)
 
-    snp_metrics = pd.DataFrame([[sad_h5['snp'][i].decode('utf-8')] + snp_metrics], columns=['rsid', *metric_names])
+    snp_metrics = pd.DataFrame([[sad_h5["snp"][i].decode("utf-8")] + snp_metrics], columns=["rsid", *metric_names])
 
     return snp_metrics
 
@@ -308,5 +308,5 @@ def smooth_track(xs: np.array, track: np.array, k: int = 3, num_points: int = 50
     return xnew, track_smooth
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

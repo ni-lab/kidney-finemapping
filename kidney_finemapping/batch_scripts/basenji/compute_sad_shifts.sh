@@ -42,11 +42,12 @@ export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 ## Command(s) to run:
 cd $BASE_DIR
 
-for CHROM in {1..22}
+for CHR in {1..22}
 do
+CHROM=chr${CHR}
 kidney_finemapping/basenji/compute_sad_shifts.py \
     /clusterfs/nilah/richard/kidney_data/models/params_sc_kidney_regression.json \
-    /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_chr${CHROM}/model_best.h5 \
+    /clusterfs/nilah/pooja/kidney_data/train/regression_chr_models/train_bigwigs_${CHROM}/model_best.h5 \
     /clusterfs/nilah/richard/kidney_data/220620_variants/susie/data/processed/snps_by_chrom/${CHROM}_snps.vcf \
     -f /clusterfs/nilah/richard/genomes/hg38.ml.fa \
     --rc \
