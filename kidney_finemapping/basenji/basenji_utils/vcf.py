@@ -273,8 +273,6 @@ def snp_seq1_pos_shifts(snp, seq_len, left_len, genome_open):
           seq_vecs_list [array] : list of one hot coded sequences surrounding the
           SNP
       """
-    # left_len = seq_len // 2 - 1
-    # right_len = seq_len // 2
     right_len = seq_len - left_len - 1
 
     # initialize one hot coded vector list
