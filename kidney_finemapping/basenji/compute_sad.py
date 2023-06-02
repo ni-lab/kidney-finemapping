@@ -12,8 +12,6 @@ import pysam
 from kidney_finemapping.basenji.basenji_utils import seqnn, stream
 from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # suppress TensorFlow warnings
-
 
 def main():
     """
