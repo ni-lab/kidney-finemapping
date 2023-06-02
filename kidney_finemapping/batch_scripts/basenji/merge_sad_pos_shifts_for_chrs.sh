@@ -25,18 +25,18 @@
 #SBATCH --error=log_files/job_%j.err
 #
 
-## Write batch script to logs
-scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
-
+#!/bin/bash
 ## Load modules and set environment variables:
-conda init bash
-source ~/.bashrc
-module load python/3.8.8
-module load cuda/10.0
-source activate basenji
-export BASENJIDIR=/global/home/users/richardshuai/basenji
-export PATH=$BASENJIDIR/bin:$PATH
-export PYTHONPATH=$BASENJIDIR/bin:$PYTHONPATH
+export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
+module load cuda/11.2
+
+# source the conda.sh script:
+source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
+conda activate basenji_kidney_finemapping
+export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
+
 
 ## Command(s) to run:
-merge_sad.py -o /clusterfs/nilah/richard/kidney_data/220513_variants/sad_pos_shifts/all_chrs --stats REF,ALT,SAD /clusterfs/nilah/richard/kidney_data/220513_variants/sad_pos_shifts/
+cd $BASE_DIR
+kidney_finemapping/basenji/merge_sad.py /clusterfs/nilah/richard/kidney_data/220513_variants/sad_pos_shifts/ \
+    -o /clusterfs/nilah/richard/kidney_data/220513_variants/sad_pos_shifts/all_chrs --stats REF,ALT,SAD

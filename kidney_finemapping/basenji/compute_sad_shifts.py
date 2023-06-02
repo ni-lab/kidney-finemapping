@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import json
 import os
+import shutil
 from optparse import OptionParser
 
 import h5py
@@ -17,7 +18,7 @@ from kidney_finemapping.basenji.basenji_utils import vcf as bvcf
 def main():
     """
     Compute SNP Activity Difference (SAD) scores while shifting the prediction window around the SNP for the whole receptive field.
-    Shifts reflect SNP position relative to center, so a shift of -1 means we are predicting one position to the right of the SNP.
+    Shifts reflect SNP position relative to prediction center, so a shift of -1 means we are predicting one position to the right of the SNP.
     - args[0] <params_file> - JSON file specifying model parameters
     - args[1] <model_file> - Model file
     - args[2] <vcf_file> - VCF file
@@ -54,6 +55,9 @@ def main():
     vcf_file = args[2]
 
     options.shifts = [int(shift) for shift in options.shifts.split(",")]
+
+    shutil.copy(vcf_file, options.out_dir)  # preserve VCF file
+
 
     # read parameters and targets
     # read model parameters

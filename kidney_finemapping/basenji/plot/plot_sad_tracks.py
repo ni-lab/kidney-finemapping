@@ -15,6 +15,11 @@ from kidney_finemapping.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_C
 
 
 def main():
+    """
+    Plot SAD tracks for each SNP from the output of compute_sad_shifts.py and save to out directory.
+    Shifts reflect prediction window position relative to the SNP, so a shift of -1 means we are predicting one position to the left of the SNP.
+    - args[0] <sad_file> - HDF5 file containing SAD shift scores for each SNP
+    """
     usage = "usage: %prog [options] <sad_file>"
     parser = OptionParser(usage)
     parser.add_option("-t", dest="targets_file", default=None, type="str", help="Targets file")
