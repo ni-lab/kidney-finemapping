@@ -1,3 +1,5 @@
 out_dir
 .idea
 log_files
+.vscode
+*.egg-info
