@@ -68,5 +68,5 @@ do
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
         --thresh ${THRESH} \
-         -o out_dir/allelic_imbalance/data/preprocessed/${target}_variants_neg${NEG_MULT}x_q${THRESH}
+         -o out_dir/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
 done
