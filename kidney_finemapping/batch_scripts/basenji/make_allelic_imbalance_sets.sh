@@ -44,11 +44,12 @@ NEG_MULT=7
 THRESH=0.01
 for TARGET in LOH PT DT
 do
+    echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        ../kidney_data/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
-        ../kidney_data/sc_atac_seq/${TARGET}_peaks.narrowPeak \
+        /clusterfs/nilah/richard/refactor/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
+        /clusterfs/nilah/richard/refactor/sc_atac_seq/${TARGET}_peaks.narrowPeak \
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
         --thresh ${THRESH} \
-        -o ../kidney_data/allelic_imbalance_testtt/data/processed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
+        -o /clusterfs/nilah/richard/refactor/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
 done
