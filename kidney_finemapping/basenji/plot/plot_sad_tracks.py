@@ -8,7 +8,6 @@ import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from typeguard import typechecked
 from scipy.interpolate import make_interp_spline
 
 from kidney_finemapping.kidney_utils import PLOT_KIDNEY_TARGET_INDICES, KIDNEY_CMAP
@@ -61,7 +60,6 @@ def main():
         plot_snp_sad_comparison(sad_h5, targets, options.out_dir, sad_stats=["SAD", "REF", "ALT"])
 
 
-@typechecked
 def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: str, sad_stats: List[str]) -> None:
     """
     Plots SAD, REF, and ALT tracks for all snps.
@@ -123,7 +121,6 @@ def plot_snp_sad_comparison(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: s
         plt.close("all")
 
 
-@typechecked
 def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, out_dir: str,
                                     lines_only=False) -> None:
     """
@@ -234,8 +231,6 @@ def plot_snp_sad_comparison_overlay(sad_h5: h5py.File, targets: pd.DataFrame, ou
         plt.close("all")
 
 
-
-@typechecked
 def calc_snp_metrics(i: int, sad_h5: h5py.File, targets: pd.DataFrame, metrics: List[str]):
     """
     Calculates metrics on SAD tracks for each SNP.
