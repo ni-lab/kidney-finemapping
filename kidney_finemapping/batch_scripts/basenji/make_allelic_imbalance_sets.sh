@@ -44,8 +44,7 @@ cd $BASE_DIR
 # Make allelic imbalance sets for LOH, PT, and DT
 NEG_MULT=7
 THRESH=0.01
-for TARGET in LOH PT DT
-do
+for TARGET in LOH PT DT; do
     echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
         out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
@@ -58,8 +57,7 @@ done
 
 # Make allelic imbalance sets for combined, Tubule
 NEG_MULT=2
-for TARGET in combined Tubule
-do
+for TARGET in combined Tubule; do
     echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
         out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
