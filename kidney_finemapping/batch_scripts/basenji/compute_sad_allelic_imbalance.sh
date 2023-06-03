@@ -20,7 +20,7 @@
 #Number of GPUs, this can be in the format of "gpu:[1-4]", or "gpu:K80:[1-4] with the type included
 #
 # Wall clock limit:
-#SBATCH --time=1:00:00
+#SBATCH --time=12:00:00
 #
 # Send stdout and stderr to logs
 #SBATCH --output=log_files/job_%j.out
