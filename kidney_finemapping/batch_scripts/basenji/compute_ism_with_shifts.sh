@@ -53,4 +53,4 @@ kidney_finemapping/basenji/compute_ism_with_shifts.py \
   --rc \
   --shifts "1,0,-1" \
   -t resources/targets/kidney_sc_wigs_hg38.txt \
-  -o out_dir/kidney_data/220513_variants/ism_with_shifts/${CHROM}
+  -o out_dir/220513_variants/ism_with_shifts/${CHROM}
