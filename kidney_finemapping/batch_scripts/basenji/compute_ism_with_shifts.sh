@@ -27,25 +27,25 @@
 #SBATCH --output=log_files/job_%j.out
 #SBATCH --error=log_files/job_%j.err
 #
-
 ## Write batch script to logs
 scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 
 ## Load modules and set environment variables:
-conda init bash
-source ~/.bashrc
-module load python/3.8.8
-module load cuda/10.0
-conda activate kidney_finemapping
+export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
+export TF_CPP_MIN_LOG_LEVEL=2
+module load cuda/11.2
 
+# Source the conda.sh script:
+source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
+conda activate basenji_kidney_finemapping
+
+# Set base directory
 export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
-export PATH=$BASE_DIR/bin:$PATH
-export PYTHONPATH=$BASE_DIR/bin:$PYTHONPATH
+cd $BASE_DIR
 
 ## Command(s) to run:
 CHROM=chr2
-cd $BASE_DIR
-kidney_finemapping/basenji/ism_summed_pos_shifts.py \
+kidney_finemapping/basenji/compute_ism_with_shifts.py \
   resources/model_params/params_sc_kidney_regression.json \
   resources/models/train_bigwigs_${CHROM}/model_best.h5 \
   out_dir/220513_variants/data/preprocessed/snps_by_chrom/${CHROM}_snps.vcf \
@@ -53,4 +53,4 @@ kidney_finemapping/basenji/ism_summed_pos_shifts.py \
   --rc \
   --shifts "1,0,-1" \
   -t resources/targets/kidney_sc_wigs_hg38.txt \
-  -o out_dir/kidney_data/220513_variants/ism_summed_pos_shifts/${CHROM}
+  -o out_dir/kidney_data/220513_variants/ism_with_shifts/${CHROM}

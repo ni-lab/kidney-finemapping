@@ -72,7 +72,7 @@ def main():
     targets_length = seqnn_model.target_lengths[0]
 
     # read SNPs from VCF
-    snps = bvcf.vcf_snps(vcf_file, flip_ref=True, validate_ref_fasta=options.genome_fasta)  # snps are flipped here
+    snps = bvcf.vcf_snps(vcf_file, flip_ref=True, validate_ref_fasta=options.genome_fasta)  # snps are flipped here so that ref matches reference genome
     num_snps = len(snps)
 
     # open genome FASTA
