@@ -34,6 +34,7 @@ def main():
     if len(args) != num_expected_args:
         parser.error(f"Incorrect number of arguments, expected {num_expected_args} arguments but got {len(args)}")
 
+    # Parse arguments
     sad_file = args[0]
     os.makedirs(options.out_dir, exist_ok=True)
 
