@@ -41,6 +41,6 @@ cd $BASE_DIR
 ## Command(s) to run:
 kidney_finemapping/basenji/plot/plot_sad_tracks.py \
     out_dir/220513_variants/sad_shifts/all_chrs/sad.h5 \
-    -t out_dir/resources/targets/kidney_sc_wigs_hg38.txt \
+    -t resources/targets/kidney_sc_wigs_hg38.txt \
     --overlay \
     -o out_dir/220513_variants/plots/sad_tracks_overlay
