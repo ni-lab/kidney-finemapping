@@ -21,7 +21,7 @@
 #SBATCH --gres=gpu:1
 #
 # Wall clock limit:
-#SBATCH --time=24:00:00
+#SBATCH --time=36:00:00
 #
 # Send stdout and stderr to logs
 #SBATCH --output=log_files/job_%j.out
