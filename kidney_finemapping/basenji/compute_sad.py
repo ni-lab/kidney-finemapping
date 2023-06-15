@@ -17,8 +17,8 @@ def main():
     """
     Given a trained model, compute SNP Activity Difference (SAD) scores for a VCF file.
     - args[0] <params_file> - JSON file specifying model parameters
-    - args[1] <model_file> - Model file
-    - args[2] <vcf_file> - VCF file
+    - args[1] <model_file> - trained model h5 file
+    - args[2] <vcf_file> - VCF file containing SNPs to score
     """
     usage = "usage: %prog [options] <params_file> <model_file> <vcf_file>"
     parser = OptionParser(usage)

@@ -60,14 +60,14 @@ for TARGET in LOH PT DT; do
         --rc \
         --shifts "1,0,-1" \
         -t resources/targets/kidney_sc_wigs_hg38.txt \
-        -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${Q_THRESH}/${SET}_sad/${CHROM}
+        -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${THRESH}/${SET}_sad/${CHROM}
     done
 
     # Merge SAD files across chromosomes
     kidney_finemapping/basenji/merge_sad.py \
-      out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${Q_THRESH}/${SET}_sad \
+      out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${THRESH}/${SET}_sad \
       --vcf \
-      -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${Q_THRESH}/${SET}_sad/all_chrs
+      -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${THRESH}/${SET}_sad/all_chrs
   done
 done
 
@@ -85,13 +85,13 @@ for TARGET in combined Tubule; do
         --rc \
         --shifts "1,0,-1" \
         -t resources/targets/kidney_sc_wigs_hg38.txt \
-        -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${Q_THRESH}/${SET}_sad/${CHROM}
+        -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${THRESH}/${SET}_sad/${CHROM}
     done
 
     # Merge SAD files across chromosomes
     kidney_finemapping/basenji/merge_sad.py \
-      out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${Q_THRESH}/${SET}_sad \
+      out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${THRESH}/${SET}_sad \
       --vcf \
-      -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${Q_THRESH}/${SET}_sad/all_chrs
+      -o out_dir/allelic_imbalance/sad/${TARGET}_neg${NEG_MULT}x_q${THRESH}/${SET}_sad/all_chrs
   done
 done

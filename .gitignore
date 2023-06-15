@@ -5,3 +5,4 @@ log_files
 *.egg-info
 out_dir
 resources
+genomes

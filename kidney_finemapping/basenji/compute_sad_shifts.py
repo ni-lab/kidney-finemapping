@@ -21,8 +21,8 @@ def main():
     Compute SNP Activity Difference (SAD) scores while shifting the prediction window around the SNP for the whole receptive field.
     Shifts reflect SNP position relative to prediction center, so a shift of -1 means we are predicting one position to the right of the SNP.
     - args[0] <params_file> - JSON file specifying model parameters
-    - args[1] <model_file> - Model file
-    - args[2] <vcf_file> - VCF file
+    - args[1] <model_file> - trained model h5 file
+    - args[2] <vcf_file> - VCF file containing SNPs to score
     """
     usage = "usage: %prog [options] <params_file> <model_file> <vcf_file>"
     parser = OptionParser(usage)
