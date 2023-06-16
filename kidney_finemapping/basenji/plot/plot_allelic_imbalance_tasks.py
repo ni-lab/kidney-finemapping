@@ -1,4 +1,5 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
+
 import bisect
 import os
 from collections import defaultdict
