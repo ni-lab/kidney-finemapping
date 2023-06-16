@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job name:
-#SBATCH --job-name=basenji_merge_sad_shifts
+#SBATCH --job-name=plot_allelic_imbalance_tasks
 #
 # Account:
 #SBATCH --account=fc_nilah
@@ -37,8 +37,9 @@ export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 cd $BASE_DIR
 
 ## Command(s) to run:
-kidney_finemapping/basenji/plot/plot_sad_tracks.py \
-    out_dir/220513_variants/sad_shifts/all_chrs/sad.h5 \
-    -t resources/targets/kidney_sc_wigs_hg38.txt \
-    --overlay \
-    -o out_dir/220513_variants/plots/sad_tracks_overlay
+for TARGET in PT LOH DT; do
+    kidney_finemapping/basenji/plot/plot_allelic_imbalance_tasks.py \
+        out_dir/allelic_imbalance/sad/${TARGET}_neg7x_q0.01 \
+        -t resources/targets/kidney_sc_wigs_hg38.txt \
+        -o out_dir/allelic_imbalance/plots/${TARGET}_neg7x_q0.01
+done
