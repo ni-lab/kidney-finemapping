@@ -27,9 +27,6 @@ def main():
     parser.add_option("-f", dest="genome_fasta",
                       default=None,
                       help="Genome FASTA for sequences [Default: %default]")
-    parser.add_option("-o", dest="out_dir",
-                      default="sad",
-                      help="Output directory for tables and plots [Default: %default]")
     parser.add_option("-l", dest="mut_len",
                       default=20, type="int",
                       help="Length of center sequence to mutate. Default is 10 upstream and 10 downstream of variant. [Default: %default]")
@@ -42,6 +39,9 @@ def main():
     parser.add_option("-t", dest="targets_file",
                       default=None, type="str",
                       help="File specifying target indexes and labels in table format")
+    parser.add_option("-o", dest="out_dir",
+                      default=None,
+                      help="Output directory for tables and plots [Default: %default]")
     (options, args) = parser.parse_args()
     # Setup
     num_expected_args = 3

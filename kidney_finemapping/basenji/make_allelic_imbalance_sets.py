@@ -16,8 +16,6 @@ def main():
     """
     usage = "usage: %prog [options] <allelic_imbalance_file> <peaks_file>"
     parser = OptionParser(usage)
-    parser.add_option("-o", dest="out_dir",
-                      default="variant_sets"),
     parser.add_option("--thresh", dest="thresh",
                       default=0.05, type="float",
                       help="FDR threshold to filter variants by Benjamini-Hochberg [Default: %default]")
@@ -33,6 +31,8 @@ def main():
     parser.add_option("--tubule_peaks", dest="tubule_peaks",
                       default=False, action="store_true",
                       help="Take union of pan tubule peaks [Default: %default]")
+    parser.add_option("-o", dest=None,
+                      default="variant_sets"),
 
     (options, args) = parser.parse_args()
 

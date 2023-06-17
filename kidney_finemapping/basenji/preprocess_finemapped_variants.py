@@ -15,7 +15,7 @@ def main():
     parser = OptionParser(usage)
     parser.add_option("--variant_set", choices=["220513", "220620"], help="Variant set being preprocessed (['220513', '220620'])")
     parser.add_option("-o", dest="out_dir",
-                      default="sad",
+                      default=None,
                       help="Output directory for tables and plots [Default: %default]")
     (options, args) = parser.parse_args()
 

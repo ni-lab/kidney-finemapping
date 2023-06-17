@@ -39,7 +39,7 @@ def main():
                       default=None, type="str",
                       help="File specifying target indexes and labels in table format")
     parser.add_option("-o", dest="out_dir",
-                      default="sad",
+                      default=None,
                       help="Output directory for tables and plots [Default: %default]")
     (options, args) = parser.parse_args()
 

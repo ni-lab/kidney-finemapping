@@ -25,9 +25,6 @@ def main():
     parser.add_option("-f", dest="genome_fasta",
                       default=None,
                       help="Genome FASTA for sequences [Default: %default]")
-    parser.add_option("-o", dest="out_dir",
-                      default="sad",
-                      help="Output directory for tables and plots [Default: %default]")
     parser.add_option("--rc", dest="rc",
                       default=False, action="store_true",
                       help="Average forward and reverse complement predictions [Default: %default]")
@@ -37,6 +34,9 @@ def main():
     parser.add_option("-t", dest="targets_file",
                       default=None, type="str",
                       help="File specifying target indexes and labels in table format")
+    parser.add_option("-o", dest="out_dir",
+                      default=None,
+                      help="Output directory for tables and plots [Default: %default]")
     (options, args) = parser.parse_args()
 
     # Setup

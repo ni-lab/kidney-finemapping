@@ -13,7 +13,7 @@ def main():
     usage = 'usage: %prog [options] <ism_summed_pos_shifts_dir>'
     parser = OptionParser(usage)
     parser.add_option('-o', dest='out_dir',
-                      default='all_chrs')
+                      default=None)
 
     (options, args) = parser.parse_args()
 
