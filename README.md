@@ -2,8 +2,7 @@
 
 
 ## Installation
-Requirements can be installed using conda.
-
+To run the scripts in this repository, we recommend using a conda environment. To install the conda environment, run the following commands:
 ```
 conda create -n basenji_kidney_finemapping python=3.8
 conda activate basenji_kidney_finemapping
@@ -61,7 +60,8 @@ python3 kidney_finemapping/basenji/compute_sad_shifts.py \
 ```
 This script will output a `out_dir/220513_variants/sad_shifts/${CHROM}` directory containing the input VCF and an h5 file containing SAD score tracks for each variant. After running this script for each chromosome, we can merge the SAD score tracks across chromosomes using the `kidney_finemapping/basenji/merge_sad_shifts.py` script as follows:
 ```
-python3 kidney_finemapping/basenji/merge_sad.py out_dir/220513_variants/sad_shifts \
+python3 kidney_finemapping/basenji/merge_sad.py
+    out_dir/220513_variants/sad_shifts \
     -n 22 \
     --vcf \
     -o out_dir/220513_variants/sad_shifts/all_chrs
@@ -80,7 +80,7 @@ This script will output a plot of the SAD score track for each SNV and save them
 ### Constructing allelic imbalance and non-allelic imbalance sets
 To quantify the model’s performance in assessing chromatin accessibility allelic imbalance (CAAI) at single nucleotide variants (SNVs), we first constructed a set of variants with allelic imbalance (positive set) in each of proximal tubule, loop of Henle, and distal tubule as well as a set of variants with non-allelic imbalance (negative set). To run this analysis, we used the `kidney_finemapping/basenji/make_allelic_imbalance_sets.py` script as follows:
 ```
-for TARGET in LOH PT DT; do
+for TARGET in PT LOH DT; do
     NEG_MULT=7
     THRESH=0.01
     python3 kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
@@ -99,7 +99,7 @@ To compute SAD scores for the allelic imbalance and non-allelic imbalance sets, 
 ```
 NEG_MULT=7
 THRESH=0.01
-for TARGET in LOH PT DT; do
+for TARGET in PT LOH DT; do
   for SET in pos neg; do
     for CHR in {1..22}; do
       CHROM=chr${CHR}
@@ -126,18 +126,32 @@ done
 ### Allelic imbalance tasks
 Two tasks were used to evaluate the model’s performance on predicting chromatin accessibility allelic imbalance (CAAI). In both tasks, we defined the model’s predictions for the reference and alternate alleles in the 192 bp bin centered at the variant as REF and ALT respectively, and we computed the predicted CAAI as REF / (REF + ALT). We tested how well predicted allelic imbalance could classify whether a variant had CAAI (i.e. discriminate CAAI variants from non-CAAI variants), as measured by both the area under the receiver operating characteristic curve (AUROC) and the area under the precision-recall curve (AUPRC). As an additional metric, among the variants in the CAAI set, we computed the AUROC for prediction of CAAI direction (REF>ALT vs ALT>REF) as measured by AUROC. The plots for these tasks can be generated using `kidney_finemapping/basenji/plot_allelic_imbalance_tasks.py`.
 ```
-
+for TARGET in PT LOH DT; do
+    python3 kidney_finemapping/basenji/plot/plot_allelic_imbalance_tasks.py \
+        out_dir/allelic_imbalance/sad/${TARGET}_neg7x_q0.01 \
+        -t resources/targets/kidney_sc_wigs_hg38.txt \
+        -o out_dir/allelic_imbalance/plots/${TARGET}_neg7x_q0.01
+done
+```
 
 ### Allelic imbalance motif enrichment
-To examine transcription factor motifs present at sites with CAAI, we used FIMO to scan the 20 bp region surrounding each variant for matches in the JASPAR 2020 database. We then computed the enrichment of motifs in the CAAI set compared to the non-CAAI set with a hypergeometric test. To do this, we used the `kidney_finemapping/basenji/allelic_imbalance_motif_enrichment.py` script as follows:
+To examine transcription factor motifs present at sites with CAAI, we used FIMO to scan the 20 bp region surrounding each variant for matches in the JASPAR 2020 database. For each variant, we queried both the reference and alternate sequence, keeping matches with a p-value of less than 1e-3 for either the reference or alternate sequence. To identify motifs affected by variants, only matches satisfying $\left|\log_{10}\frac{p-value_{ref}}{p-value_{alt}}\ \right|\ \geq\ 1$ were analyzed.  We then computed the enrichment of motifs in the CAAI set compared to the non-CAAI set with a hypergeometric test. To do this, we used the `kidney_finemapping/basenji/allelic_imbalance_motif_enrichment.py` script as follows:
 ```
-python3 kidney_finemapping/basenji/allelic_imbalance_motif_enrichment.py \
-    out_dir/allelic_imbalance/data/preprocessed/PT_variants_neg7x_q0.01 \
-    --motif_file resources/motif_dbs/JASPAR2020_CORE_nonredundant_vertebrates.meme \
-    -o out_dir/allelic_imbalance/motif_enrichment/PT_variants
+for TARGET in PT LOH DT; do
+    python3 kidney_finemapping/basenji/allelic_imbalance_motif_enrichment.py \
+        out_dir/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg7x_q0.01 \
+        --motif_file resources/motif_dbs/JASPAR2020_CORE_nonredundant_vertebrates.meme \
+        -o out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants_neg7x_q0.01
+done
 ```
 
-
-We then used `kidney_finemapping/basenji/plot_allelic_imbalance_motif_enrichment.py` to plot the enrichment of motifs in the CAAI set compared to the non-CAAI set.
-
+We then used `kidney_finemapping/basenji/plot_allelic_imbalance_motif_enrichment.py` to plot the enrichment of motifs in the CAAI set compared to the non-CAAI set. For example, to plot the enrichment of motifs in the PT CAAI set, we ran:
+```
+TARGET=PT
+python3 basenji/plot/plot_allelic_imbalance_motif_enrichment.py \
+  ./resources/data/tf_pseudobulk_Pseudobulk_Wilson_TF_analysis.csv \
+  ./out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants_neg7x_q0.01/hypergeom_per_motif.tsv \
+  --cell_type ${TARGET} \
+  -o /home/rshuai/research/ni-lab/kidney_finemapping/kidney_finemapping/out_dir/plot_motif_enrichment/${TARGET}_variants
+```
 
