@@ -181,7 +181,7 @@ def main():
     # Compute hypergeometric test separately for each motif
     pos_diff_fimo["set"] = "POS"
     neg_diff_fimo["set"] = "NEG"
-    test_fimo = pd.concat([pos_diff_fimo, neg_diff_fimo], axis=0).reset_index(drop=True)
+    test_fimo = pd.concat([pos_diff_fimo, neg_diff_fimo], axis=0).reset_index(drop=True).rename({"# motif_id": "motif_id"}, axis=1)
 
     # Merge FIMO diffs with allelic imbalance data
     test_fimo = test_fimo.merge(ai_df, left_on="sequence_name", right_on="Seq_name")
