@@ -31,8 +31,8 @@ def main():
     parser.add_option("--tubule_peaks", dest="tubule_peaks",
                       default=False, action="store_true",
                       help="Take union of pan tubule peaks [Default: %default]")
-    parser.add_option("-o", dest=None,
-                      default="variant_sets"),
+    parser.add_option("-o", dest="out_dir",
+                      default=None),
 
     (options, args) = parser.parse_args()
 

@@ -89,7 +89,7 @@ for TARGET in PT LOH DT; do
     NEG_MULT=7
     THRESH=0.01
     python3 kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        resources/data/allelic_imbalance/raw/all_${TARGET}q10.tsv \
+        resources/data/allelic_imbalance/raw/astestq10tab/all_${TARGET}q10.tsv \
         out_dir/sc_atac_seq/${TARGET}_peaks.narrowPeak \
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
@@ -153,9 +153,9 @@ done
 We then used `kidney_finemapping/basenji/plot_allelic_imbalance_motif_enrichment.py` to plot the enrichment of motifs in the CAAI set compared to the non-CAAI set. For example, to plot the enrichment of motifs in the PT CAAI set, we ran:
 ```
 TARGET=PT
-python3 basenji/plot/plot_allelic_imbalance_motif_enrichment.py \
+python3 kidney_finemapping/basenji/plot/plot_allelic_imbalance_motif_enrichment.py \
   resources/data/tf_pseudobulk_Pseudobulk_Wilson_TF_analysis.csv \
   out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants_neg7x_q0.01/hypergeom_per_motif.tsv \
   --cell_type ${TARGET} \
-  -o /home/rshuai/research/ni-lab/kidney_finemapping/kidney_finemapping/out_dir/plot_motif_enrichment/${TARGET}_variants
+  -o /home/rshuai/research/ni-lab/kidney_finemapping/kidney_finemapping/out_dir/allelic_imbalance/plot_motif_enrichment/${TARGET}_variants
 ```
