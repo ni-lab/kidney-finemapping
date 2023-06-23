@@ -7,20 +7,24 @@ import numpy as np
 import pandas as pd
 import pysam
 import statsmodels.api as sm
-from scipy.stats import hypergeom, binom_test
+from scipy.stats import binom_test, hypergeom
 
 
 def main():
-    usage = "usage: %prog [options] <motif_file>"
+    """
+    Given positive (allelic imbalance) and negative (non-allelic imbalance) sets of variants and a motif database file,
+    compute motif enrichment for each motif in the database.
+    """
+    usage = "usage: %prog [options] <variant_sets_dir>"
     parser = OptionParser(usage)
-    parser.add_option("--vcf_dir", dest="vcf_dir", default=None, type="str", help="VCF file directory")
-    parser.add_option("--ai_dir", dest="ai_dir", default=None, type="str", help="Allelic imbalance file directory")
-    parser.add_option("-f", dest="genome_fasta", default="/home/rshuai/research/ni-lab/analysis/genomes/hg38.ml.fa")
-    parser.add_option("--min_thresh", dest="min_pval_thresh", default=1e-4, type="float", help="Threshold for min p-value for both ref and alt in fimo_diffs [Default: %default]")
+    parser.add_option("--motif_file", dest="motif_file",
+                      default="./resources/motif_dbs/JASPAR2020_CORE_nonredundant_vertebrates.meme")
+    parser.add_option("-f", dest="genome_fasta", default="./resources/genomes/hg38.ml.fa")
+    parser.add_option("--min_thresh", dest="min_pval_thresh", default=1e-3, type="float", help="Threshold for min p-value for both ref and alt in fimo_diffs [Default: %default]")
     parser.add_option("--diff_thresh", dest="diff_pval_thresh", default=1, type="float", help="Threshold for magnitude difference in log p-values between ref and alt [Default: %default]")
     parser.add_option("-w", dest="window_size", default=20, type="int", help="Window size centered at SNP for FIMO query")
-    parser.add_option("--no_compute_fimo", dest="no_compute_fimo", default=False, action="store_true", help="Compute FIMO before enrichment tests (necessary for first time) [Default: %default]")
-    parser.add_option("--no_compute_fimo_diffs", dest="no_compute_fimo_diffs", default=False, action="store_true", help="Compute FIMO diffs before enrichment tests (necessary for first time) [Default: %default]")
+    parser.add_option("--no_compute_fimo", dest="no_compute_fimo", default=False, action="store_true", help="Do not compute FIMO before enrichment tests (necessary for first time) [Default: %default]")
+    parser.add_option("--no_compute_fimo_diffs", dest="no_compute_fimo_diffs", default=False, action="store_true", help="Do not compute FIMO diffs before enrichment tests (must compute for first time) [Default: %default]")
     parser.add_option("-o", dest="out_dir", default="ai_motif_enrichment")
     (options, args) = parser.parse_args()
 
@@ -29,12 +33,12 @@ def main():
     if len(args) != num_expected_args:
         parser.error(f"Incorrect number of arguments, expected {num_expected_args} arguments but got {len(args)}")
 
-    motif_file = args[0]
+    variant_sets_dir = args[0]
 
     os.makedirs(options.out_dir, exist_ok=True)
-    vcfs = ["pos_set", "neg_set"]
 
     # Create FASTA with reference sequences surrounding each variant
+    vcfs = ["pos_set", "neg_set"]
     num_seqs_per_set = []
     genome_open = pysam.Fastafile(options.genome_fasta)
 
@@ -42,21 +46,22 @@ def main():
     right_len = options.window_size - left_len
 
     for vcf in vcfs:
-        ref_fimo_dir = os.path.join(options.out_dir, "{}_ref_fimo_out".format(vcf))
+        ref_fimo_dir = f"{options.out_dir}/{vcf}_ref_fimo_out"
         os.makedirs(ref_fimo_dir, exist_ok=True)
-        alt_fimo_dir = os.path.join(options.out_dir, "{}_alt_fimo_out".format(vcf))
+        ref_fimo_all_file = f"{ref_fimo_dir}/fimo_all.txt"
+
+        alt_fimo_dir = f"{options.out_dir}/{vcf}_alt_fimo_out"
         os.makedirs(alt_fimo_dir, exist_ok=True)
-        ref_fimo_all_file = os.path.join(ref_fimo_dir, "fimo_all.txt")
-        alt_fimo_all_file = os.path.join(alt_fimo_dir, "fimo_all.txt")
+        alt_fimo_all_file = f"{alt_fimo_dir}/fimo_all.txt"
 
         if not options.no_compute_fimo:
-            ref_fasta_file = os.path.join(options.out_dir, "{}_ref_fasta.fa".format(vcf))
+            ref_fasta_file = f"{options.out_dir}/{vcf}_ref_fasta.fa"
             ref_fasta_out = open(ref_fasta_file, "w")
 
-            alt_fasta_file = os.path.join(options.out_dir, "{}_alt_fasta.fa".format(vcf))
+            alt_fasta_file = f"{options.out_dir}/{vcf}_alt_fasta.fa"
             alt_fasta_out = open(alt_fasta_file, "w")
 
-            vcf_in = open(os.path.join(options.vcf_dir, "{}.vcf".format(vcf)), "r")
+            vcf_in = open(f"{variant_sets_dir}/{vcf}.vcf", "r")
 
             line = vcf_in.readline()
             while line[0] == "#":
@@ -92,31 +97,21 @@ def main():
             vcf_in.close()
 
             # Query ref and alt sequences with FIMO
-            subprocess.call("fimo --o {} {} {}"
-                            .format(ref_fimo_dir, motif_file, ref_fasta_file),
-                            shell=True)
-
-            subprocess.call("fimo --o {} {} {}"
-                            .format(alt_fimo_dir, motif_file, alt_fasta_file),
-                            shell=True)
+            subprocess.call(f"fimo --o {ref_fimo_dir} {options.motif_file} {ref_fasta_file}", shell=True)
+            subprocess.call(f"fimo --o {alt_fimo_dir} {options.motif_file} {alt_fasta_file}", shell=True)
 
             ref_fimo_all_out = open(ref_fimo_all_file, "w")
-            subprocess.call("fimo --thresh 1 --text {} {}"
-                            .format(motif_file, ref_fasta_file),
-                            shell=True, stdout=ref_fimo_all_out)
+            subprocess.call(f"fimo --thresh 1 --text {options.motif_file} {ref_fasta_file}", shell=True, stdout=ref_fimo_all_out)
+            ref_fimo_all_out.close()
 
             alt_fimo_all_out = open(alt_fimo_all_file, "w")
-            subprocess.call("fimo --thresh 1 --text {} {}"
-                            .format(motif_file, alt_fasta_file),
-                            shell=True, stdout=alt_fimo_all_out)
+            subprocess.call(f"fimo --thresh 1 --text {options.motif_file} {alt_fasta_file}", shell=True, stdout=alt_fimo_all_out)
+            alt_fimo_all_out.close()
 
         # Compute metrics for differences between ref and alt FIMO queries
         if not options.no_compute_fimo_diffs:
-            column_names = ["motif_id", "motif_alt_id", "sequence_name", "start",
-                            "stop", "strand", "score", "p-value", "q-value", "matched_sequence"]
-
-            diff_fimo_all_file = os.path.join(options.out_dir, "{}_fimo_diffs_all.txt".format(vcf))
-            diff_fimo_file = os.path.join(options.out_dir, "{}_fimo_diffs.txt".format(vcf))
+            diff_fimo_all_file = f"{options.out_dir}/{vcf}_fimo_diffs_all.txt"
+            diff_fimo_file = f"{options.out_dir}/{vcf}_fimo_diffs.txt"
 
             # Clear contents
             diff_fimo_all = open(diff_fimo_all_file, "w")
@@ -125,10 +120,8 @@ def main():
             diff_fimo.close()
 
             # Read FIMO all files in chunks
-            ref_fimo_all = pd.read_table(ref_fimo_all_file, sep="\t", names=column_names, comment="#",
-                                         keep_default_na=False, chunksize=1e7)
-            alt_fimo_all = pd.read_table(alt_fimo_all_file, sep="\t", names=column_names, comment="#",
-                                         keep_default_na=False, chunksize=1e7)
+            ref_fimo_all = pd.read_csv(ref_fimo_all_file, sep="\t", header=0, keep_default_na=False, chunksize=1e7)
+            alt_fimo_all = pd.read_csv(alt_fimo_all_file, sep="\t", header=0, keep_default_na=False, chunksize=1e7)
             append_header = True
             for ref_chunk, alt_chunk in zip(ref_fimo_all, alt_fimo_all):
                 assert len(ref_chunk) == len(
@@ -163,20 +156,21 @@ def main():
     genome_open.close()
 
     # Load filtered diff fimos from file
-    diff_fimo_files = [os.path.join(options.out_dir, "{}_fimo_diffs.txt".format(vcf)) for vcf in vcfs]
+    diff_fimo_files = [f"{options.out_dir}/{vcf}_fimo_diffs.txt" for vcf in vcfs]
     diff_fimos = [pd.read_table(dff, sep="\t", index_col=None, header=0) for dff in diff_fimo_files]
-    num_seqs_per_set = [sum(1 for line in open(os.path.join(options.out_dir, "pos_set_ref_fasta.fa"))) // 2,
-                        sum(1 for line in open(os.path.join(options.out_dir, "neg_set_ref_fasta.fa"))) // 2]
+    num_seqs_per_set = [sum(1 for _ in open(f"{options.out_dir}/pos_set_ref_fasta.fa")) // 2,
+                        sum(1 for _ in open(f"{options.out_dir}/neg_set_ref_fasta.fa")) // 2]
+
 
     # Load allelic imbalance files from file
-    ai_files = [os.path.join(options.ai_dir, "{}.vcf".format(vcf)) for vcf in vcfs]
+    ai_files = [f"{variant_sets_dir}/{vcf}.vcf" for vcf in vcfs]
     columns = ["Chr", "Pos", "Seq_name", "Ref", "Alt", "#Ref", "#Alt", "P-value", "#Ref/(#Ref+#Alt)", "#Total",
                "Q-value"]
     ai_dfs = [pd.read_table(ai_file, sep="\t", index_col=None, names=columns, comment="#") for ai_file in ai_files]
     ai_df = pd.concat([ai_dfs[0], ai_dfs[1]], axis=0).reset_index(drop=True)
 
     # Compute hypergeometric test to find enrichment of disrupted motifs in positive set
-    print("========= Performing hypergeometric test ========= ")
+    print("========= Performing hypergeometric tests ========= ")
     pos_diff_fimo, neg_diff_fimo = diff_fimos
 
     num_pos_seqs, num_neg_seqs = num_seqs_per_set
@@ -228,7 +222,7 @@ def main():
     pval_df["binom_qval"] = sm.stats.multipletests(pval_df["binom_pval"], alpha=0.05, method="fdr_bh")[1]
     pval_df = pval_df.sort_values("hypergeom_pval")
 
-    pval_df.to_csv(os.path.join(options.out_dir, "hypergeom_per_motif.tsv"), sep="\t")
+    pval_df.to_csv(f"{options.out_dir}/hypergeom_per_motif.tsv", sep="\t")
 
 
 if __name__ == "__main__":

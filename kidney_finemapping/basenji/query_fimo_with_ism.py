@@ -118,7 +118,7 @@ def main():
     alt_fimo_all = pd.read_table(alt_fimo_all_file, sep="\t", names=column_names, comment="#", keep_default_na=False)
 
     # Filter out motif queries that don"t overlap with the variant
-    print("Filtering out queries that don"t overlap with the variant...")
+    print("Filtering out queries that don't overlap with the variant...")
     ref_fimo_all = ref_fimo_all.merge(snp_seq_df, how="inner", left_on="rsid", right_index=True, validate="m:1")
     ref_fimo_all["variant_start"] = mut_up + 1  # 1-indexed
     ref_fimo_all["variant_end"] = mut_up + ref_fimo_all["ref_allele"].str.len()  # 1-indexed, inclusive

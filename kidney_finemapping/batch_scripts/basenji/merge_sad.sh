@@ -12,7 +12,8 @@ export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 cd $BASE_DIR
 
 ## Command(s) to run:
-kidney_finemapping/basenji/merge_sad.py out_dir/220620_variants/susie/sad/ \
+kidney_finemapping/basenji/merge_sad.py \
+  out_dir/220620_variants/susie/sad/ \
   -n 22 \
   --vcf \
   -o out_dir/220620_variants/susie/sad/all_chrs

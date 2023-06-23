@@ -41,14 +41,9 @@ export BASE_DIR=/clusterfs/nilah/richard/home/kidney-finemapping
 cd $BASE_DIR
 
 ## Command(s) to run:
-# 220620 variants
-kidney_finemapping/basenji/preprocess_finemapped_variants.py \
-    out_dir/220620_variants/susie/data/raw/220620_tubule_centered_susie3_exonexclude_220617_FinemappedTubuleTest.txt \
-    --variant_set 220620 \
-    -o out_dir/220620_variants/susie/data/preprocessed
-
-# 220513 variants
-kidney_finemapping/basenji/preprocess_finemapped_variants.py \
-    out_dir/220513_variants/data/raw/220513_gwas_replicating_loci_top_variants_susie5_finemap5_01_hg38.txt \
-    --variant_set 220513 \
-    -o out_dir/220513_variants/data/preprocessed
+for TARGET in PT LOH DT; do
+    kidney_finemapping/basenji/allelic_imbalance_motif_enrichment.py \
+        out_dir/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg7x_q0.01 \
+        --motif_file resources/motif_dbs/JASPAR2020_CORE_nonredundant_vertebrates.meme \
+        -o out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants
+done

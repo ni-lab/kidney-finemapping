@@ -10,11 +10,19 @@ import seaborn as sns
 
 
 def main():
-    usage = 'usage: %prog [options] <tf_pseudobulk_Pseudobulk_Wilson_TF_analysis csv> <hypergeom_per_motif tsv>'
+    usage = "usage: %prog [options] <tf_pseudobulk_Pseudobulk_Wilson_TF_analysis csv> <hypergeom_per_motif tsv>"
     parser = OptionParser(usage)
-    parser.add_option("--cell_type", dest="cell_type", default=None, help="Cell type for selecting top 300 expressed TFs")
-    parser.add_option("-n", dest="n", default=300, help="Number of top expressed TFs to select")
-    parser.add_option('-o', dest='out_dir', default='sad_pos_shifts_plots', help='Output directory for script')
+    parser.add_option("--cell_type", dest="cell_type",
+                      default=None,
+                      type=str,
+                      help="Cell type for selecting top 300 expressed TFs")
+    parser.add_option("-n", dest="n",
+                      default=300,
+                      type=int,
+                      help="Number of top expressed TFs to select")
+    parser.add_option("-o", dest="out_dir",
+                      default="out_dir/allelic_imbalance/plots/motif_enrichment",
+                      help="Output directory for script")
     options, args = parser.parse_args()
 
     # Setup
@@ -34,7 +42,7 @@ def main():
     # Extract top N tf motifs
     if options.cell_type == "Tubule":
         top_tfs = set()
-        tubule_targets = ['CFH', 'PT', 'LOH', 'DT', 'IC']  # IC is CD
+        tubule_targets = ["CFH", "PT", "LOH", "DT", "IC"]  # IC is CD
         for target in tubule_targets:
             top_tfs = top_tfs.union(
                 set(tf_analysis_df.sort_values(by=target, ascending=False)["gene_name"][:options.n].str.lower().values)
@@ -43,7 +51,7 @@ def main():
         top_tfs = set(tf_analysis_df.sort_values(by=options.cell_type, ascending=False)["gene_name"][:options.n].str.lower().values)
 
     # subset to motifs for top N expressed TFs, taking most significant motif for duplicates (e.g. dealing with var.2)
-    motifs = hypergeom_per_motif_df["motif_alt_id"].str.lower().str.replace(r'\([^)]*\)', '', regex=True)  # get rid of (var.2) annotation
+    motifs = hypergeom_per_motif_df["motif_alt_id"].str.lower().str.replace(r"\([^)]*\)", "", regex=True)  # get rid of (var.2) annotation
     top_n_motifs = set(motifs.values).intersection(top_tfs)
     filtered_hypergeom_df = hypergeom_per_motif_df[hypergeom_per_motif_df["motif_alt_id"].str.lower().isin(top_n_motifs)]
     filtered_hypergeom_df = filtered_hypergeom_df[~filtered_hypergeom_df.duplicated(keep="first")]
@@ -94,5 +102,5 @@ def main():
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
