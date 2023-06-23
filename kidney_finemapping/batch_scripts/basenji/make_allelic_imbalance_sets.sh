@@ -47,7 +47,7 @@ THRESH=0.01
 for TARGET in LOH PT DT; do
     echo "Processing ${TARGET}..."
     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
+        resources/data/allelic_imbalance/raw/all_${TARGET}q10.tsv \
         out_dir/sc_atac_seq/${TARGET}_peaks.narrowPeak \
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
@@ -56,15 +56,15 @@ for TARGET in LOH PT DT; do
 done
 
 # Make allelic imbalance sets for combined, Tubule
-NEG_MULT=2
-for TARGET in combined Tubule; do
-    echo "Processing ${TARGET}..."
-    kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
-        out_dir/sc_atac_seq \
-        --tubule_peaks \
-        --neg_mult ${NEG_MULT} \
-        --n_bins 20 \
-        --thresh ${THRESH} \
-         -o out_dir/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
-done
+# NEG_MULT=2
+# for TARGET in combined Tubule; do
+#     echo "Processing ${TARGET}..."
+#     kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
+#         resources/data/allelic_imbalance/raw/all_${TARGET}q10.tsv \
+#         out_dir/sc_atac_seq \
+#         --tubule_peaks \
+#         --neg_mult ${NEG_MULT} \
+#         --n_bins 20 \
+#         --thresh ${THRESH} \
+#          -o out_dir/allelic_imbalance/data/preprocessed/${TARGET}_variants_neg${NEG_MULT}x_q${THRESH}
+# done

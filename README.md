@@ -2,7 +2,7 @@
 
 
 ## Installation
-To run the scripts in this repository, we recommend using a conda environment. To install the conda environment, run the following commands:
+To run the scripts in this repository, we recommend using a conda environment:
 ```
 conda create -n basenji_kidney_finemapping python=3.8
 conda activate basenji_kidney_finemapping
@@ -11,19 +11,24 @@ pip install -e .
 ```
 Then, to install tensorflow with GPU support, follow instructions from https://www.tensorflow.org/install/pip for your system.
 
+## Resources
+TODO: Figure out how to host resources for download
+
+All resources used in this repository can be found in the `resources` directory, and you will need to download the `resources.zip` from XXXXX. This includes the model parameters, model weights, and various data used for computing SAD scores and evaluating model performance in predicting chromatin accessibility allelic imbalance.
+
 ## SAD score analysis
 ### Data preprocessing
-To compute SAD scores for variants, we need the variants in VCF format. Furthermore, since we use 23 models, each holding out a different chromosome, we need to split the variants into 23 VCF files, one for each chromosome. An example of how we preprocessed the data can be found by running the `kidney_finemapping/basenji/preprocessed_finemapped_variants.py` script as follows:
+To compute SNV activity difference (SAD) scores for variants, we need the variants in VCF format. Furthermore, since we use 23 models, each holding out a different chromosome, we need to split the variants into 23 VCF files, one for each chromosome. An example of how we preprocessed the data can be found by running the `kidney_finemapping/basenji/preprocessed_finemapped_variants.py` script as follows:
 ```
 python3 kidney_finemapping/basenji/preprocess_finemapped_variants.py \
-    out_dir/220513_variants/data/raw/220513_gwas_replicating_loci_top_variants_susie5_finemap5_01_hg38.txt \
+    resources/data/220513_variants/raw/220513_gwas_replicating_loci_top_variants_susie5_finemap5_01_hg38.txt \
     --variant_set 220513 \
     -o out_dir/220513_variants/data/preprocessed
 ```
 This script will output a VCF file for each chromosome in the `out_dir/220513_variants/data/preprocessed/snps_by_chrom` directory.
 
 ### Computing SAD scores
-To compute SNV activity difference (SAD) scores for variants, we used the `kidney_finemapping/basenji/compute_sad.py` script. An example of computing SAD scores for the variants on chromosome 1 is shown below:
+To compute SAD scores for variants, we used the `kidney_finemapping/basenji/compute_sad.py` script. An example of computing SAD scores for the variants on chromosome 1 is shown below:
 ```
 CHROM=chr1
 python3 kidney_finemapping/basenji/compute_sad.py \
@@ -84,7 +89,7 @@ for TARGET in PT LOH DT; do
     NEG_MULT=7
     THRESH=0.01
     python3 kidney_finemapping/basenji/make_allelic_imbalance_sets.py \
-        out_dir/allelic_imbalance/data/raw/astestq10tab/all_${TARGET}q10.tsv \
+        resources/data/allelic_imbalance/raw/all_${TARGET}q10.tsv \
         out_dir/sc_atac_seq/${TARGET}_peaks.narrowPeak \
         --neg_mult ${NEG_MULT} \
         --n_bins 20 \
@@ -149,9 +154,8 @@ We then used `kidney_finemapping/basenji/plot_allelic_imbalance_motif_enrichment
 ```
 TARGET=PT
 python3 basenji/plot/plot_allelic_imbalance_motif_enrichment.py \
-  ./resources/data/tf_pseudobulk_Pseudobulk_Wilson_TF_analysis.csv \
-  ./out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants_neg7x_q0.01/hypergeom_per_motif.tsv \
+  resources/data/tf_pseudobulk_Pseudobulk_Wilson_TF_analysis.csv \
+  out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants_neg7x_q0.01/hypergeom_per_motif.tsv \
   --cell_type ${TARGET} \
   -o /home/rshuai/research/ni-lab/kidney_finemapping/kidney_finemapping/out_dir/plot_motif_enrichment/${TARGET}_variants
 ```
-

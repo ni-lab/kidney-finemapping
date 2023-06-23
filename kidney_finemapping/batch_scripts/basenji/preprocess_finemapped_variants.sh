@@ -43,12 +43,12 @@ cd $BASE_DIR
 ## Command(s) to run:
 # 220620 variants
 kidney_finemapping/basenji/preprocess_finemapped_variants.py \
-    out_dir/220620_variants/susie/data/raw/220620_tubule_centered_susie3_exonexclude_220617_FinemappedTubuleTest.txt \
+    resources/data/220620_variants/raw/220620_tubule_centered_susie3_exonexclude_220617_FinemappedTubuleTest.txt \
     --variant_set 220620 \
     -o out_dir/220620_variants/susie/data/preprocessed
 
 # 220513 variants
 kidney_finemapping/basenji/preprocess_finemapped_variants.py \
-    out_dir/220513_variants/data/raw/220513_gwas_replicating_loci_top_variants_susie5_finemap5_01_hg38.txt \
+    resources/data/220513_variants/raw/220513_gwas_replicating_loci_top_variants_susie5_finemap5_01_hg38.txt \
     --variant_set 220513 \
     -o out_dir/220513_variants/data/preprocessed
