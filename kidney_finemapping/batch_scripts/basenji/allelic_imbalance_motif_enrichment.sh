@@ -31,6 +31,7 @@ scontrol write batch_script $SLURM_JOB_ID log_files/job_$SLURM_JOB_ID.sh
 ## Load modules and set environment variables:
 export PATH=/clusterfs/nilah/richard/home/conda/envs/basenji_kidney_finemapping:$PATH
 module load cuda/11.2
+module load meme
 
 # source the conda.sh script:
 source /global/software/sl-7.x86_64/modules/langs/python/3.7/etc/profile.d/conda.sh
