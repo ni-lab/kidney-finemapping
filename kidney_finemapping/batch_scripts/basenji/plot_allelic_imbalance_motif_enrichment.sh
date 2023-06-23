@@ -44,5 +44,5 @@ for TARGET in PT LOH DT; do
   resources/data/tf_pseudobulk_Pseudobulk_Wilson_TF_analysis.csv \
   out_dir/allelic_imbalance/motif_enrichment/${TARGET}_variants_neg7x_q0.01/hypergeom_per_motif.tsv \
   --cell_type ${TARGET} \
-  -o /home/rshuai/research/ni-lab/kidney_finemapping/kidney_finemapping/out_dir/plot_motif_enrichment/${TARGET}_variants
+  -o out_dir/allelic_imbalance/plot_motif_enrichment/${TARGET}_variants
 done
