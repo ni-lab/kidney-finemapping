@@ -1,6 +1,5 @@
 # kidney-finemapping
 
-
 ## Installation
 To run the scripts in this repository, we recommend using a conda environment:
 ```
