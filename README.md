@@ -19,39 +19,39 @@ All resources used in this repository can be found in the `resources` directory,
 Scripts from the [basenji Github repository](https://github.com/calico/basenji/) were used for data preprocessing, model training, and evaluation of ChromKid models. 
 
 Data & resources needed for training ChromKid models:
-* hg38 genome fasta
-* Blacklist and assembly gaps bed files
+* hg38 genome fasta (Downloadable from https://storage.googleapis.com/basenji_barnyard2/hg38.ml.fa.gz)
+* Blacklist and assembly gaps bed files (in `resources/model_training/`)
 * Per cell type narrowPeak files
 * Per cell type pseudobulked ATAC-seq BigWig files
-* Targets & model parameters files
+* Targets & model parameters files (in `resources/model_training/`)
   
 ### Data preprocessing
 We trained 23 CNNs using a leave-one-chromosome-out approach. For each of the 23 CNNs, one chromosome was completely held out during training and validation. The X and Y chromosomes were grouped together and both held out from the same model. For all models where an odd numbered chromosome was held out, and for the model where the X and Y chromosomes were held out, chromosomes 2, 18, and 22 were used for validation (`-v chr2,chr18,chr22`). For all models where an even numbered chromosome was held out, chromosomes 5, 9, and 21 were used for validation (`-v chr5,chr9,chr21`).
 
 Command used to preprocess training data for binary classification models:
 ```
-python basenji_data.py --peaks -b resources/hg38.blacklist.rep.bed -g resources/hg38_gaps.bed -p 20 -r 4096 -w 192 -l 1344 --peaks -v <val_chrs> -t <test_chr> --stride 192 --stride_test 192 --crop 576 -o <classification_data_dir> --local resources/hg38.ml.fa resources/classification_targets.txt
+python basenji_data.py --peaks -b resources/model_training/hg38.blacklist.rep.bed -g resources/model_training/hg38_gaps.bed -p 20 -r 4096 -w 192 -l 1344 --peaks -v <val_chrs> -t <test_chr> --stride 192 --stride_test 192 --crop 576 -o <classification_data_dir> --local resources/model_training/hg38.ml.fa resources/model_training/classification_targets.txt
 ```
 
 Command used to preprocess training data for regression models:
 ```
-python basenji_data.py -b resources/hg38.blacklist.rep.bed -g resources/hg38_gaps.bed -p 20 -r 4096 -w 192 -l 1344 --peaks -v <val_chrs> -t <test_chr> --stride 192 --stride_test 192 --crop 576 -o <regression_data_dir> --local resources/hg38.ml.fa resources/regression_targets.txt
+python basenji_data.py -b resources/model_training/hg38.blacklist.rep.bed -g resources/model_training/hg38_gaps.bed -p 20 -r 4096 -w 192 -l 1344 --peaks -v <val_chrs> -t <test_chr> --stride 192 --stride_test 192 --crop 576 -o <regression_data_dir> --local resources/model_training/hg38.ml.fa resources/model_training/regression_targets.txt
 ```
 
 ### Model training
 Command used to pre-train models on the binary classification task:
 ```
-python basenji_train.py -k -o <classification_model_dir> resources/classification_model_parameters.json <classification_data_dir>
+python basenji_train.py -k -o <classification_model_dir> resources/model_training/classification_model_parameters.json <classification_data_dir>
 ```
 Command used to fine-tune models on the regression task:
 ```
-python basenji_train.py -k --restore <classification_model_dir>/model_best.h5 -o <regression_model_dir> resources/regression_model_parameters.json <regression_data_dir>
+python basenji_train.py -k --restore <classification_model_dir>/model_best.h5 -o <regression_model_dir> resources/model_training/regression_model_parameters.json <regression_data_dir>
 ```
 
 ### Model evaluation
 Command used to evaluate models on sequences from the held-out chromosome:
 ```
-python basenji_test.py --rc --peaks --save --ai 0,1,2,3,4,5,6,7,8,9 --shifts 1,0,-1 -t resources/regression_targets.txt -o <output_dir> resources/regression_model_parameters.json <regression_model_dir>/model_best.h5 <regression_data_dir>
+python basenji_test.py --rc --peaks --save --ai 0,1,2,3,4,5,6,7,8,9 --shifts 1,0,-1 -t resources/model_training/regression_targets.txt -o <output_dir> resources/model_training/regression_model_parameters.json <regression_model_dir>/model_best.h5 <regression_data_dir>
 ```
 
 ## SAD score analysis
