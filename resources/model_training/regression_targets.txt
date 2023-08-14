@@ -1,0 +1,11 @@
+	identifier	file	sum_stat	description
+0	Immune	resources/bigwigs/Immune_treat_pileup.bw	sum	Immune
+1	Str	resources/bigwigs/Str_treat_pileup.bw	sum	Str
+2	Pod	resources/bigwigs/Pod_treat_pileup.bw	sum	Pod
+3	CD	resources/bigwigs/CD_treat_pileup.bw	sum	CD
+4	CFH	resources/bigwigs/CFH_treat_pileup.bw	sum	CFH
+5	Tcell	resources/bigwigs/Tcell_treat_pileup.bw	sum	Tcell
+6	End	resources/bigwigs/End_treat_pileup.bw	sum	End
+7	DT	resources/bigwigs/DT_treat_pileup.bw	sum	DT
+8	PT	resources/bigwigs/PT_treat_pileup.bw	sum	PT
+9	LOH	resources/bigwigs/LOH_treat_pileup.bw	sum	LOH

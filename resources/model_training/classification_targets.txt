@@ -1,0 +1,11 @@
+	identifier	file	sum_stat	description
+0	Immune	resources/narrow_peaks/Immune_peaks.narrowPeak	peak	Immune
+1	Str	resources/narrow_peaks/Str_peaks.narrowPeak	peak	Str
+2	Pod	resources/narrow_peaks/Pod_peaks.narrowPeak	peak	Pod
+3	CD	resources/narrow_peaks/CD_peaks.narrowPeak	peak	CD
+4	CFH	resources/narrow_peaks/CFH_peaks.narrowPeak	peak	CFH
+5	Tcell	resources/narrow_peaks/Tcell_peaks.narrowPeak	peak	Tcell
+6	End	resources/narrow_peaks/End_peaks.narrowPeak	peak	End
+7	DT	resources/narrow_peaks/DT_peaks.narrowPeak	peak	DT
+8	PT	resources/narrow_peaks/PT_peaks.narrowPeak	peak	PT
+9	LOH	resources/narrow_peaks/LOH_peaks.narrowPeak	peak	LOH
