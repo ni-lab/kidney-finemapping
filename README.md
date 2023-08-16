@@ -121,7 +121,25 @@ This script will output a plot of the SAD score track for each SNV and save them
 
 ## Chromatin accessibility allelic imbalance (CAAI)
 ### Constructing allelic imbalance and non-allelic imbalance sets
-To quantify the model’s performance in assessing chromatin accessibility allelic imbalance (CAAI) at single nucleotide variants (SNVs), we first constructed a set of variants with allelic imbalance (positive set) in each of proximal tubule, loop of Henle, and distal tubule as well as a set of variants with non-allelic imbalance (negative set). To run this analysis, we used the `kidney_finemapping/basenji/make_allelic_imbalance_sets.py` script as follows:
+To quantify the model’s performance in assessing chromatin accessibility allelic imbalance (CAAI) at single nucleotide variants (SNVs), we first constructed a set of variants with allelic imbalance (positive set) in each of proximal tubule, loop of Henle, and distal tubule as well as a set of variants with non-allelic imbalance (negative set). To run this analysis we first counted the number of allele specific reads for heterozygous sites (from our imputed genotypes) for each individual and cell type:
+```
+bash kidney_finemapping/basenji/generate_allele_specific_counts.sh \
+         /clusterfs/nilah/rkchung/data/atac/vcf38/ \
+         /clusterfs/nilah/rkchung/data/atac/vcf38/ascount/ \                     
+         /clusterfs/nilah/kidney_ATACseq/WASP/ \                                 
+         "204686210102_R01C01 204686210102_R02C01 204686210102_R03C01 204686210102_R03C01" \
+         "200131cortex 200317combined 200707_100bp_combined 200707combined" 
+```
+
+We then combine allele specific read counts across individuals to improve power to detect allelic imbalance and calculate imbalance significance:
+```
+python kidney_finemapping/basenji/combine_allelic_imbalance.py  \                                        
+    /clusterfs/nilah/rkchung/data/atac/vcf38/ascount/ \                         
+    /clusterfs/nilah/rkchung/data/atac/astest \                                 
+    /clusterfs/nilah/rkchung/data/atac/hetout
+```
+
+Finally, we generate a matched set of negative (not imbalanced) sites `kidney_finemapping/basenji/make_allelic_imbalance_sets.py` script as follows:
 ```
 for TARGET in PT LOH DT; do
     NEG_MULT=7
