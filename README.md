@@ -135,7 +135,7 @@ We then combine allele specific read counts across individuals to improve power 
 ```
 python kidney_finemapping/basenji/combine_allelic_imbalance.py  \                                        
     /clusterfs/nilah/rkchung/data/atac/vcf38/ascount/ \                         
-    /clusterfs/nilah/rkchung/data/atac/astest \                                 
+    /clusterfs/nilah/rkchung/data/atac/astestq10tab \                                 
     /clusterfs/nilah/rkchung/data/atac/hetout
 ```
 
