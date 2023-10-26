@@ -23,7 +23,8 @@ dependencies:
   - python=3.8
   - scikit-learn
   - scipy
-  - seaborn
+  - seaborn==0.12.2
+  - statannot
   - statsmodels
   - tabulate
   - tqdm

@@ -6,3 +6,5 @@ log_files
 out_dir
 resources
 __pycache__
+resources.zip
+scripts

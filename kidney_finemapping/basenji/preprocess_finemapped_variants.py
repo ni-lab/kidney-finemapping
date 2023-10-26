@@ -13,7 +13,7 @@ def main():
     """
     usage = "usage: %prog [options] <finemapped_variants_file>"
     parser = OptionParser(usage)
-    parser.add_option("--variant_set", choices=["220513", "220620"], help="Variant set being preprocessed (['220513', '220620'])")
+    parser.add_option("--variant_set", choices=["220513", "220620", "231024"], help="Variant set being preprocessed (['220513', '220620', '231024'])")
     parser.add_option("-o", dest="out_dir",
                       default=None,
                       help="Output directory for tables and plots [Default: %default]")
@@ -34,7 +34,7 @@ def main():
 
     variants_df = pd.read_table(variants_file, sep="\t", header=0)
 
-    if options.variant_set == "220620":
+    if options.variant_set in ["220620", "231024"]:
         variants_vcf = variants_df[["hg_38_chrom", "hg38_bp", "SNP", "A1", "A2"]].assign(**{"QUAL": ".", "FILTER": ".", "INFO": "."})
     elif options.variant_set == "220513":
         variants_vcf = variants_df[["chr_hg38", "BP_hg38", "SNP", "A1", "A2"]].assign(**{"QUAL": ".", "FILTER": ".", "INFO": "."})
