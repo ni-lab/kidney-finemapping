@@ -60,13 +60,95 @@ def main():
     assert ~np.any(df_pip.duplicated(subset=["SNP", "A1", "A2"])), "Expecting no duplicate SNPs in PIP df"
     pip_categories = sorted(np.unique(df_pip["pip_category"]))
 
-    ### Plot allelic imbalance data ###
+    # ### Plot allelic imbalance data ###
     imbalance_targets = [os.path.basename(x).replace("all_", "").replace("q10.tsv", "") for x in
                          glob.glob(f"{allelic_imbalance_dir}/*.tsv")]
     ai_out_dir = f"{options.out_dir}/allelic_imbalance"
 
     Path(ai_out_dir).mkdir(parents=True, exist_ok=True)
     df_imb = df_pip.copy()
+
+    # convenience column for joining
+
+    df_imb["chr_pos_a1_a2"] = df_imb["hg_38_chrom"].astype(str) + "_" + \
+                              df_imb["hg38_bp"].astype(str) + "_" + \
+                              df_imb["A1"] + "_" + \
+                              df_imb["A2"]
+
+    df_imb = df_imb.reset_index()
+
+    for target in imbalance_targets:
+        ai_file = f"{allelic_imbalance_dir}/all_{target}q10.tsv"
+        ai_df = pd.read_csv(ai_file, sep="\t")
+        ai_df = ai_df[['Chr', 'Pos', 'Ref', 'Alt', '#Ref', '#Alt', 'P-value', '#Ref/(#Ref+#Alt)']]  # Pos in hg38
+        ai_df["chr_pos_a1_a2"] = "chr" + ai_df["Chr"].astype(str) + "_" + \
+                                ai_df["Pos"].astype(str) + "_" + \
+                                ai_df["Ref"] + "_" + \
+                                ai_df["Alt"]
+        ai_df = ai_df.drop(['Chr', 'Pos', 'Ref', 'Alt'], axis=1)
+        col_names = (ai_df.columns[:-1] + f"_{target}").tolist() + [ai_df.columns[-1]]  # add target suffix to all except chr_pos_a1_a2
+        ai_df.columns = col_names
+
+        df_imb = df_imb.merge(ai_df, how="left", left_on="chr_pos_a1_a2", right_on="chr_pos_a1_a2")
+
+    df_imb = df_imb.drop("chr_pos_a1_a2", axis=1)
+    df_imb = df_imb.set_index("index")
+
+    for id in imbalance_targets:
+        # Filter for read count >= 20
+        read_count_mask = (df_imb[f"#Ref_{id}"] + df_imb[f"#Alt_{id}"]) < 20
+        df_imb.loc[read_count_mask, f"#Ref/(#Ref+#Alt)_{id}"] = np.nan
+
+    # Box plot by allelic imbalance
+    df_imb['pip_category_categorical'] = df_imb['pip_category'].astype(pd.CategoricalDtype(categories=pip_categories, ordered=True))  # deal with statannot bug by making sure PIP categories in df are ordered
+    df_imb = df_imb.sort_values(by='pip_category_categorical')
+    for id in imbalance_targets:
+        try:
+            y = np.abs(0.5 - df_imb[f"#Ref/(#Ref+#Alt)_{id}"])
+            x = df_imb["pip_category"]
+
+            outlier_mask = (y > y.quantile(q=0.02)) & (y < y.quantile(q=0.99))
+            y_plot = y[outlier_mask]
+            x_plot = x[outlier_mask]
+
+            plt.figure()
+            ax = sns.boxplot(x=x_plot, y=y_plot, order=pip_categories)
+            add_stat_annotation(ax, x=x, y=y,
+                                box_pairs=[(pip_categories[0], x) for x in pip_categories if x != pip_categories[0]],
+                                test="Mann-Whitney-ls", text_format="full",
+                                loc="outside")
+            plt.ylabel(f"|0.5 - IMB_{id}|")
+            plt.tight_layout()
+            plt.savefig(f"{ai_out_dir}/pip_vs_abs_imb_{id}.png", dpi=300, bbox_inches="tight")
+            plt.show()
+        except ValueError as e:
+            # Usually if we don't have any values in a category
+            print(f"Skipping {id} due to ValueError: {e}")
+
+    # Box plot by max allellic imbalance across tubule
+    tubule_targets = ['CFH', 'PT', 'LOH', 'DT', 'CD']
+    y = np.abs(0.5 - df_imb[[f"#Ref/(#Ref+#Alt)_{target}" for target in tubule_targets]]).max(axis=1)
+    x = df_imb["pip_category"]
+    outlier_mask = (y > y.quantile(q=0.02)) & (y < y.quantile(q=0.99))
+    y_plot = y[outlier_mask]
+    x_plot = x[outlier_mask]
+
+    plt.figure()
+    ax = sns.boxplot(x=x_plot, y=y_plot, order=pip_categories)
+    add_stat_annotation(ax, x=x, y=y,
+                        box_pairs=[(pip_categories[0], x) for x in pip_categories if x != pip_categories[0]],
+                        test="Mann-Whitney-ls", text_format="full",
+                        loc="outside")
+    plt.ylabel(f"max |0.5 - IMB| across [CFH, PT, LOH, DT, CD]")
+    plt.tight_layout()
+    plt.savefig(f"{options.out_dir}/pip_vs_abs_imb_tubule.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+    variant_counts = df_imb.groupby("pip_category").count()[
+        [f"#Ref/(#Ref+#Alt)_{id}" for id in imbalance_targets]
+    ]
+    variant_counts.columns = variant_counts.columns.str.lstrip("#Ref/(#Ref+#Alt)_")
+    variant_counts.to_csv(f"{ai_out_dir}/variant_counts.tsv", sep="\t", header=True, index=True)
 
     # Add SAD scores to df, making sure to change SAD scores to proper direction
     # for convenience, set index to snp with both alleles sorted for easier indexing
