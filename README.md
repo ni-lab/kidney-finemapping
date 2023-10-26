@@ -15,6 +15,45 @@ TODO: Figure out how to host resources for download
 
 All resources used in this repository can be found in the `resources` directory, and you will need to download the `resources.zip` from XXXXX. This includes the model parameters, model weights, and various data used for computing SAD scores and evaluating model performance in predicting chromatin accessibility allelic imbalance.
 
+## Training ChromKid models
+Scripts from the [basenji Github repository](https://github.com/calico/basenji/) were used for data preprocessing, model training, and evaluation of ChromKid models. 
+
+Data & resources needed for training ChromKid models:
+* hg38 genome fasta (Downloadable from https://storage.googleapis.com/basenji_barnyard2/hg38.ml.fa.gz)
+* Blacklist and assembly gaps bed files (in `resources/model_training/`)
+* Per cell type narrowPeak files
+* Per cell type pseudobulked ATAC-seq BigWig files
+* Targets & model parameters files (in `resources/model_training/`)
+  
+### Data preprocessing
+We trained 23 CNNs using a leave-one-chromosome-out approach. For each of the 23 CNNs, one chromosome was completely held out during training and validation. The X and Y chromosomes were grouped together and both held out from the same model. For all models where an odd numbered chromosome was held out, and for the model where the X and Y chromosomes were held out, chromosomes 2, 18, and 22 were used for validation (`-v chr2,chr18,chr22`). For all models where an even numbered chromosome was held out, chromosomes 5, 9, and 21 were used for validation (`-v chr5,chr9,chr21`).
+
+Command used to preprocess training data for binary classification models:
+```
+python basenji_data.py --peaks -b resources/model_training/hg38.blacklist.rep.bed -g resources/model_training/hg38_gaps.bed -p 20 -r 4096 -w 192 -l 1344 --peaks -v <val_chrs> -t <test_chr> --stride 192 --stride_test 192 --crop 576 -o <classification_data_dir> --local resources/model_training/hg38.ml.fa resources/model_training/classification_targets.txt
+```
+
+Command used to preprocess training data for regression models:
+```
+python basenji_data.py -b resources/model_training/hg38.blacklist.rep.bed -g resources/model_training/hg38_gaps.bed -p 20 -r 4096 -w 192 -l 1344 --peaks -v <val_chrs> -t <test_chr> --stride 192 --stride_test 192 --crop 576 -o <regression_data_dir> --local resources/model_training/hg38.ml.fa resources/model_training/regression_targets.txt
+```
+
+### Model training
+Command used to pre-train models on the binary classification task:
+```
+python basenji_train.py -k -o <classification_model_dir> resources/model_training/classification_model_parameters.json <classification_data_dir>
+```
+Command used to fine-tune models on the regression task:
+```
+python basenji_train.py -k --restore <classification_model_dir>/model_best.h5 -o <regression_model_dir> resources/model_training/regression_model_parameters.json <regression_data_dir>
+```
+
+### Model evaluation
+Command used to evaluate models on sequences from the held-out chromosome:
+```
+python basenji_test.py --rc --peaks --save --ai 0,1,2,3,4,5,6,7,8,9 --shifts 1,0,-1 -t resources/model_training/regression_targets.txt -o <output_dir> resources/model_training/regression_model_parameters.json <regression_model_dir>/model_best.h5 <regression_data_dir>
+```
+
 ## SAD score analysis
 ### Data preprocessing
 To compute SNV activity difference (SAD) scores for variants, we need the variants in VCF format. Furthermore, since we use 23 models, each holding out a different chromosome, we need to split the variants into 23 VCF files, one for each chromosome. An example of how we preprocessed the data can be found by running the `kidney_finemapping/basenji/preprocessed_finemapped_variants.py` script as follows:
@@ -82,7 +121,25 @@ This script will output a plot of the SAD score track for each SNV and save them
 
 ## Chromatin accessibility allelic imbalance (CAAI)
 ### Constructing allelic imbalance and non-allelic imbalance sets
-To quantify the model’s performance in assessing chromatin accessibility allelic imbalance (CAAI) at single nucleotide variants (SNVs), we first constructed a set of variants with allelic imbalance (positive set) in each of proximal tubule, loop of Henle, and distal tubule as well as a set of variants with non-allelic imbalance (negative set). To run this analysis, we used the `kidney_finemapping/basenji/make_allelic_imbalance_sets.py` script as follows:
+To quantify the model’s performance in assessing chromatin accessibility allelic imbalance (CAAI) at single nucleotide variants (SNVs), we first constructed a set of variants with allelic imbalance (positive set) in each of proximal tubule, loop of Henle, and distal tubule as well as a set of variants with non-allelic imbalance (negative set). To run this analysis we first counted the number of allele specific reads for heterozygous sites (from our imputed genotypes) for each individual and cell type:
+```
+bash kidney_finemapping/basenji/generate_allele_specific_counts.sh \
+         /clusterfs/nilah/rkchung/data/atac/vcf38/ \
+         /clusterfs/nilah/rkchung/data/atac/vcf38/ascount/ \                     
+         /clusterfs/nilah/kidney_ATACseq/WASP/ \                                 
+         "204686210102_R01C01 204686210102_R02C01 204686210102_R03C01 204686210102_R03C01" \
+         "200131cortex 200317combined 200707_100bp_combined 200707combined" 
+```
+
+We then combine allele specific read counts across individuals to improve power to detect allelic imbalance and calculate imbalance significance:
+```
+python kidney_finemapping/basenji/combine_allelic_imbalance.py  \                                        
+    /clusterfs/nilah/rkchung/data/atac/vcf38/ascount/ \                         
+    /clusterfs/nilah/rkchung/data/atac/astestq10tab \                                 
+    /clusterfs/nilah/rkchung/data/atac/hetout
+```
+
+Finally, we generate a matched set of negative (not imbalanced) sites `kidney_finemapping/basenji/make_allelic_imbalance_sets.py` script as follows:
 ```
 for TARGET in PT LOH DT; do
     NEG_MULT=7
