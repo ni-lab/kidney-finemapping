@@ -55,7 +55,9 @@ def main():
 
     # Read PIP data and assign PIP bins
     df_pip = pd.read_csv(finemapped_variants_tsv, sep="\t")
-    df_pip["pip_category"] = df_pip["susie10_noprior_PIP"].apply(lambda x: assign_pip_category(x, pip_bins))
+    # df_pip["pip_category"] = df_pip["susie10_noprior_PIP"].apply(lambda x: assign_pip_category(x, pip_bins))
+    df_pip["pip_category"] = df_pip["susie10_PIP"].apply(lambda x: assign_pip_category(x, pip_bins))
+
 
     assert ~np.any(df_pip.duplicated(subset=["SNP", "A1", "A2"])), "Expecting no duplicate SNPs in PIP df"
     pip_categories = sorted(np.unique(df_pip["pip_category"]))

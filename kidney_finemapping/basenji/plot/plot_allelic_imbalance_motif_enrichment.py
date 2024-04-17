@@ -101,6 +101,9 @@ def main():
     plt.savefig(f"{options.out_dir}/{options.cell_type}_binom_top_{options.n}.pdf", dpi=300, bbox_inches="tight")
     plt.show()
 
+    # save csv to out dir
+    filtered_hypergeom_df.drop(["binom_sig", "-log10(hypergeom_qval)"], axis=1).to_csv(f"{options.out_dir}/{options.cell_type}_hypergeom_top_{options.n}.csv")
+
 
 if __name__ == "__main__":
     main()
