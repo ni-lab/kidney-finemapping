@@ -11,9 +11,8 @@ pip install -e .
 Then, to install tensorflow with GPU support, follow instructions from https://www.tensorflow.org/install/pip for your system.
 
 ## Resources
-TODO: Figure out how to host resources for download
 
-All resources used in this repository can be found in the `resources` directory, and you will need to download the `resources.zip` from XXXXX. This includes the model parameters, model weights, and various data used for computing SAD scores and evaluating model performance in predicting chromatin accessibility allelic imbalance.
+All resources used in this repository can be found in the `resources` directory, and you will need to download the `resources.zip` from [Zenodo](https://zenodo.org/records/13225916). This includes the model parameters, model weights, and various data used for computing SAD scores and evaluating model performance in predicting chromatin accessibility allelic imbalance.
 
 ## Training ChromKid models
 Scripts from the [basenji Github repository](https://github.com/calico/basenji/) were used for data preprocessing, model training, and evaluation of ChromKid models. 
