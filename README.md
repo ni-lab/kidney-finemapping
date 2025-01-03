@@ -15,7 +15,7 @@ Then, to install tensorflow with GPU support, follow instructions from https://w
 All resources used in this repository can be found in the `resources` directory, and you will need to download the `resources.zip` from [Zenodo](https://zenodo.org/records/13225916). This includes the model parameters, model weights, and various data used for computing SAD scores and evaluating model performance in predicting chromatin accessibility allelic imbalance.
 
 ## Training ChromKid models
-Scripts from the [basenji Github repository](https://github.com/calico/basenji/) were used for data preprocessing, model training, and evaluation of ChromKid models. 
+Scripts from the [basenji Github repository](https://github.com/calico/basenji/) were used for data preprocessing, model training, and evaluation of ChromKid models (Note: Please install [this commit](https://github.com/calico/basenji/commit/14e844f44383a7ade07539755e1556821c90c3ec) of the basenji Github repository to replicate our data processing and model training). 
 
 Data & resources needed for training ChromKid models:
 * hg38 genome fasta (Downloadable from https://storage.googleapis.com/basenji_barnyard2/hg38.ml.fa.gz)
